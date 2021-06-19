@@ -1,7 +1,8 @@
 <template>
     <div class="dashboard">
         <Navbar />
-        <!-- <Map /> -->
+        <Map />
+        <Buttons />
         <div class="joystick"></div>
         <div class="camera">
             <video src="../assets/video/bg.mp4" loop autoplay></video>
@@ -12,11 +13,13 @@
 <script lang="ts">
 import Navbar from '@/components/Navbar/Navbar.vue';
 import Map from '@/components/Map/Map.vue';
+import Buttons from '@/components/Buttons/Buttons.vue';
 
 export default {
     components: {
         Navbar,
         Map,
+        Buttons,
     },
 };
 </script>
