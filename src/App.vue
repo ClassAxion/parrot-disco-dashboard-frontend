@@ -21,4 +21,34 @@ html {
     overflow: hidden;
     box-sizing: border-box;
 }
+
+.Vue-Toastification__toast--error.myToast {
+    background-color: #e74c3c;
+    height: 50px;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: white;
+    box-sizing: border-box;
+    border: 2px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Vue-Toastification__toast--success.myToast {
+    background-color: #27ae60;
+    height: 50px;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: white;
+    box-sizing: border-box;
+    border: 2px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 </style>
