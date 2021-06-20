@@ -15,6 +15,7 @@ const options: PluginOptions = {
     closeButton: false,
     hideProgressBar: true,
     icon: false,
+    toastClassName: ['myToast'],
 };
 
 const app = createApp(App);

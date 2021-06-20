@@ -131,7 +131,7 @@ export default {
             else this.validToken = false;
         },
         connect() {
-            this.toast.error('Stream is not currently active');
+            this.toast.success('Stream is not currently active');
         },
     },
 };
