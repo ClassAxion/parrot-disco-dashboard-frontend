@@ -7,6 +7,9 @@
             <Server />
             <Battery />
         </div>
+        <div class="center">
+            <span>In Flight</span>
+        </div>
         <div class="right">
             <Gamepad />
             <FlightTime />
@@ -67,5 +70,9 @@ export default {
 .left {
     display: flex;
     align-items: center;
+}
+.center {
+    font-weight: 600;
+    color: #fff;
 }
 </style>

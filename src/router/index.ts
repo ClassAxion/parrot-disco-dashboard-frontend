@@ -4,7 +4,7 @@ import Settings from '../views/Settings.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
-        path: '/',
+        path: '/dashboard',
         name: 'Dashboard',
         component: Dashboard,
     },

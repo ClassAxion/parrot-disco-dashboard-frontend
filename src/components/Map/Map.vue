@@ -55,14 +55,14 @@ export default {
             document.querySelector(
                 '.leaflet-marker-icon',
             ).style.transform += ` rotate(${45}deg)`;
-        }, 100);
+        }, 1000);
     },
 };
 </script>
 
 <style lang="scss">
 .map {
-    grid-column: 1/3;
+    grid-column: 1/2;
     background-color: white;
     aspect-ratio: 1;
     margin-top: auto;

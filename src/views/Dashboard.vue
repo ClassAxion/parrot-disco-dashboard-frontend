@@ -3,7 +3,7 @@
         <Navbar />
         <Map />
         <Buttons />
-        <div class="joystick"></div>
+        <Joysticks />
         <div class="camera">
             <video src="../assets/video/bg.mp4" loop autoplay></video>
         </div>
@@ -14,12 +14,14 @@
 import Navbar from '@/components/Navbar/Navbar.vue';
 import Map from '@/components/Map/Map.vue';
 import Buttons from '@/components/Buttons/Buttons.vue';
+import Joysticks from '@/components/Joysticks/Joysticks.vue';
 
 export default {
     components: {
         Navbar,
         Map,
         Buttons,
+        Joysticks,
     },
 };
 </script>
@@ -27,30 +29,19 @@ export default {
 <style lang="scss">
 .dashboard {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: 300px 1fr 320px;
     width: 100vw;
     height: 100vh;
     background-color: #3d3d3d;
+    @media (max-width: 1300px) {
+        grid-template-columns: 250px 1fr 320px;
+    }
 }
 
 .navbar {
-    grid-column: 1/13;
     background-color: rgba(#3d3d3d, 0.4);
     height: 3rem;
     z-index: 1;
-}
-
-.joystick {
-    grid-column: 11/13;
-    background-color: red;
-    margin-top: auto;
-    aspect-ratio: 1;
-    opacity: 0.5;
-    z-index: 1;
-    transition: 0.2s all ease-in-out;
-    &:hover {
-        opacity: 1;
-    }
 }
 
 .camera {

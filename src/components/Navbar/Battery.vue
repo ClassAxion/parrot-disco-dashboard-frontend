@@ -10,8 +10,8 @@
 <style lang="scss" scoped>
 .battery {
     border: 3px solid #333;
-    width: 32px;
-    height: 16px;
+    width: 40px;
+    height: 24px;
     padding: 2px;
     border-radius: 4px;
     position: relative;
