@@ -1,8 +1,14 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Dashboard from '../views/Dashboard.vue';
 import Settings from '../views/Settings.vue';
+import Home from '../views/Home.vue';
 
 const routes: Array<RouteRecordRaw> = [
+    {
+        path: '/',
+        name: 'Home',
+        component: Home,
+    },
     {
         path: '/dashboard',
         name: 'Dashboard',

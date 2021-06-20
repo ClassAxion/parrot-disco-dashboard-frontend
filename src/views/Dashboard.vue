@@ -1,12 +1,10 @@
 <template>
     <div class="dashboard">
+        <Stream />
         <Navbar />
         <Map />
         <Buttons />
         <Joysticks />
-        <div class="camera">
-            <video src="../assets/video/bg.mp4" loop autoplay></video>
-        </div>
     </div>
 </template>
 
@@ -15,6 +13,7 @@ import Navbar from '@/components/Navbar/Navbar.vue';
 import Map from '@/components/Map/Map.vue';
 import Buttons from '@/components/Buttons/Buttons.vue';
 import Joysticks from '@/components/Joysticks/Joysticks.vue';
+import Stream from '@/components/Stream/Stream.vue';
 
 export default {
     components: {
@@ -22,6 +21,7 @@ export default {
         Map,
         Buttons,
         Joysticks,
+        Stream,
     },
 };
 </script>
@@ -42,19 +42,5 @@ export default {
     background-color: rgba(#3d3d3d, 0.4);
     height: 3rem;
     z-index: 1;
-}
-
-.camera {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    video {
-        min-width: 100%;
-        min-height: 100%;
-        margin: 0;
-    }
 }
 </style>
