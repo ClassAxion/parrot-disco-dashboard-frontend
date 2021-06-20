@@ -69,7 +69,7 @@
                     </li>
                 </ul>
             </div>
-            <button @click="connect">connect</button>
+            <button @click="connect" type="button">connect</button>
 
             <p class="poland">Made with <span>❤</span> in Poland</p>
         </form>
@@ -84,6 +84,7 @@ import { useToast } from 'vue-toastification';
 import Video from '@/assets/video/bg.mp4';
 import Parrot from '@/assets/img/parrot-truncate.png';
 export default {
+    inject: ['socket'],
     setup() {
         // Get toast interface
         const toast = useToast();
@@ -91,8 +92,20 @@ export default {
         // Make it available inside methods
         return { toast };
     },
+    mounted() {
+        this.socket.on('connect', () => {
+            this.sendDetails();
+
+            switch (this.option) {
+                case 'Dashboard':
+                    this.$router.push('/dashboard');
+                    break;
+            }
+        });
+    },
     data() {
         return {
+            username: '',
             options: ['Dashboard', 'Only Video'],
             show: false,
             option: 'Dashboard',
@@ -131,7 +144,13 @@ export default {
             else this.validToken = false;
         },
         connect() {
-            this.toast.success('Stream is not currently active');
+            this.socket.connect();
+        },
+        sendDetails() {
+            this.socket.emit('user', {
+                username: this.username,
+                token: this.token,
+            });
         },
     },
 };
