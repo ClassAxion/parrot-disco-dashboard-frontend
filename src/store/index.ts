@@ -1,12 +1,69 @@
-import { createStore } from 'vuex'
+import { Socket } from 'socket.io-client';
+import { createStore, Store } from 'vuex';
 
-export default createStore({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
-})
+import { Store as StoreInfo } from '@/interfaces/Store';
+
+export default function(socket: Socket): Store<StoreInfo> {
+    const store: Store<StoreInfo> = createStore({
+        state: {
+            isConnected: false,
+            battery: {
+                percent: 0,
+                voltage: 0,
+            },
+            camera: {
+                tilt: 0,
+                pan: 0,
+                currentTiltPosition: 0,
+                currentPanPosition: 0,
+                maxTiltSpeed: 0,
+                maxPanSpeed: 0,
+            },
+            gps: {
+                latitude: 0,
+                longitude: 0,
+                altitude: 0,
+                isFixed: false,
+                availableSatellites: 0,
+            },
+            home: {
+                latitude: 0,
+                longitude: 0,
+                altitude: 0,
+                isUsing: false,
+            },
+            orientation: {
+                pitch: 0,
+                roll: 0,
+                yaw: 0,
+                speed: 0,
+                airSpeed: 0,
+                altitude: 0,
+            },
+            permission: {
+                isSuperUser: false,
+                canPilotingPitch: false,
+                canPilotingRoll: false,
+                canMoveCamera: false,
+                canUseAutonomy: false,
+            },
+            piloting: {
+                pitch: 0,
+                roll: 0,
+                throttle: 0,
+            },
+            rth: {
+                delay: 0,
+                homeType: '',
+            },
+        },
+        mutations: {},
+        actions: {},
+        modules: {},
+    });
+
+    socket.on('connect', () => (store.state.isConnected = true));
+    socket.on('disconnect', () => (store.state.isConnected = false));
+
+    return store;
+}
