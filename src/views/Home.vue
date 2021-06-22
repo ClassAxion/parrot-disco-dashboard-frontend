@@ -15,7 +15,7 @@
             <div class="inputWrapper">
                 <div class="input">
                     <input
-                        type="text"
+                        type="password"
                         placeholder="Token"
                         v-model="token"
                         :readonly="validToken"
@@ -42,10 +42,10 @@
             </div>
             <div
                 class="select"
-                @click="show = !show"
+                @click="showViews = !showViews"
                 :style="{ color: setColor }"
             >
-                <span>{{ option ? option : 'View' }}</span>
+                <span>{{ selectedView ? selectedView : 'View' }}</span>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -59,13 +59,13 @@
                         d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M7,10L12,15L17,10H7Z"
                     />
                 </svg>
-                <ul class="options" v-if="show">
+                <ul class="views" v-if="showViews">
                     <li
-                        v-for="option in setOptions"
-                        @click="setOption(option)"
-                        :key="option"
+                        v-for="view in availableViews"
+                        @click="setView(view)"
+                        :key="view"
                     >
-                        {{ option }}
+                        {{ view }}
                     </li>
                 </ul>
             </div>
@@ -78,11 +78,25 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import { useToast } from 'vue-toastification';
+import { Socket } from 'socket.io-client';
+import axios from 'axios';
 
-import Video from '@/assets/video/bg.mp4';
-import Parrot from '@/assets/img/parrot-truncate.png';
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        socket: Socket;
+        selectedView: string;
+        views: string[];
+        token: string;
+        validToken: boolean;
+        isChecked: boolean;
+    }
+}
+
+const Video = require('@/assets/video/bg.mp4');
+const Parrot = require('@/assets/img/parrot-truncate.png');
+
 export default {
     inject: ['socket'],
     setup() {
@@ -96,21 +110,24 @@ export default {
         this.socket.on('connect', () => {
             this.sendDetails();
 
-            switch (this.option) {
+            switch (this.selectedView) {
                 case 'Dashboard':
                     this.$router.push('/dashboard');
                     break;
+                default:
+                    this.toast.warning('This view is unsupported right now :(');
             }
         });
     },
     data() {
         return {
             username: '',
-            options: ['Dashboard', 'Only Video'],
-            show: false,
-            option: 'Dashboard',
+            views: ['Dashboard', 'Only Video'],
+            showViews: false,
+            selectedView: 'Dashboard',
             token: '',
-            validToken: null,
+            validToken: false,
+            isChecked: false,
         };
     },
     computed: {
@@ -121,35 +138,40 @@ export default {
             return Parrot;
         },
         setColor() {
-            return this.option ? '#3d3d3d' : '#979797';
+            return this.selectedView ? '#3d3d3d' : '#979797';
         },
         setFill() {
-            if (this.validToken === null) return '#3d3d3d';
+            if (!this.isChecked) return '#3d3d3d';
             else if (this.validToken) return '#979797';
             else if (!this.validToken) return '#e74c3c';
         },
-        setOptions() {
-            let options = [...this.options];
-            if (this.validToken) options.push('Take off');
-            return options;
+        availableViews() {
+            return this.validToken ? [...this.views, 'Take off'] : this.views;
         },
     },
 
     methods: {
-        setOption(option) {
-            this.option = option;
+        setView(view: string) {
+            this.selectedView = view;
         },
         checkToken() {
-            if (this.token && this.token === '111') this.validToken = true;
-            else this.validToken = false;
+            this.isChecked = true;
+
+            axios
+                .post('/token/check', { token: this.token })
+                .then(({ data }) => {
+                    this.validToken = data.status;
+                })
+                .catch(() => (this.validToken = false));
         },
         connect() {
             this.socket.connect();
         },
         sendDetails() {
-            this.socket.emit('user', {
+            this.socket.emit('init', {
                 username: this.username,
                 token: this.token,
+                selectedView: this.selectedView,
             });
         },
     },
@@ -284,7 +306,7 @@ export default {
             position: absolute;
             right: 10px;
         }
-        .options {
+        .views {
             background-color: white;
             position: absolute;
             bottom: calc(-100% - 60px);
