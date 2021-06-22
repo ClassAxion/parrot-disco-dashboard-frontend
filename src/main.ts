@@ -30,7 +30,7 @@ const app = createApp(App);
 
 app.provide('socket', socket);
 
-app.use(store);
+app.use(store(socket));
 app.use(router);
 
 app.use(Toast, options);
