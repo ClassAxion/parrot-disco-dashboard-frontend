@@ -107,7 +107,7 @@ export default {
         return { toast };
     },
     mounted() {
-        this.socket.on('connect', () => {
+        this.socket.once('connect', () => {
             this.sendDetails();
 
             switch (this.selectedView) {
