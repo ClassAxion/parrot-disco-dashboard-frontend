@@ -4,6 +4,7 @@ import router from './router';
 import store from './store';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import SimplePeer from 'simple-peer';
 
 import Toast, { PluginOptions, POSITION } from 'vue-toastification';
 // Import the CSS or use your own!
@@ -15,6 +16,10 @@ const socket = io({
     path: '/socket/',
     autoConnect: false,
 });
+
+const peer: SimplePeer.Instance = new SimplePeer();
+
+peer.on('signal', signal => socket.emit('signal', signal));
 
 const options: PluginOptions = {
     position: POSITION.TOP_CENTER,
@@ -29,8 +34,9 @@ const options: PluginOptions = {
 const app = createApp(App);
 
 app.provide('socket', socket);
+app.provide('peer', peer);
 
-app.use(store(socket));
+app.use(store(socket, peer));
 app.use(router);
 
 app.use(Toast, options);
