@@ -13,6 +13,8 @@ import { User } from './User';
 
 export interface Store {
     isConnected: boolean;
+    isGamePadActive: boolean;
+    animationFrame: number;
     stream: any;
     battery: Battery;
     camera: Camera;
