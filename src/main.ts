@@ -36,6 +36,10 @@ const app = createApp(App);
 app.provide('socket', socket);
 app.provide('peer', peer);
 
+socket.on('disconnect', () => {
+    window.location.href = '/';
+});
+
 app.use(store(socket, peer));
 app.use(router);
 

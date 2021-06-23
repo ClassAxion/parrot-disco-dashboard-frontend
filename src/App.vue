@@ -51,4 +51,9 @@ html {
     justify-content: center;
     align-items: center;
 }
+
+.disabled {
+    opacity: 0.4 !important;
+    cursor: default !important;
+}
 </style>

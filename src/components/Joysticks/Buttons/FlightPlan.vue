@@ -1,6 +1,8 @@
 <template>
-    <div class="select" @click="show = !show">
-        <span>{{ option ? option : 'Flight Plan' }}</span>
+    <div class="select" @click="show = !show" :class="isEnabledClass">
+        <span>{{
+            selectedFlightPlan ? selectedFlightPlan : 'Flight Plan'
+        }}</span>
         <svg
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -16,31 +18,62 @@
         </svg>
         <ul class="options" v-if="show">
             <li
-                v-for="option in options"
-                :key="option"
-                @click="setOption(option)"
+                v-for="flightPlan in flightPlans"
+                :key="flightPlan"
+                @click="triggerFlightPlan(flightPlan)"
             >
-                {{ option }}
+                {{ flightPlan }}
             </li>
         </ul>
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Instance as Peer } from 'simple-peer';
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        peer: Peer;
+        isEnabled: boolean;
+    }
+}
+
+export default defineComponent({
     data() {
         return {
             show: false,
-            option: '',
-            options: ['Test', 'Land'],
+            selectedFlightPlan: '',
+            flightPlans: ['test', 'land'],
         };
     },
-    methods: {
-        setOption(option) {
-            this.option = option;
+    computed: {
+        ...mapState({
+            isEnabled: (state: any) =>
+                state.state.flyingState !== 0 &&
+                state.permission.canUseAutonomy,
+        }),
+        isEnabledClass() {
+            return this.isEnabled ? '' : 'disabled';
         },
     },
-};
+    methods: {
+        triggerFlightPlan(name) {
+            if (!this.isEnabled) return;
+
+            this.selectedFlightPlan = name;
+
+            this.peer.send(
+                JSON.stringify({
+                    action: 'flightPlanStart',
+                    data: name,
+                    force: true,
+                }),
+            );
+        },
+    },
+});
 </script>
 
 <style lang="scss" scoped>

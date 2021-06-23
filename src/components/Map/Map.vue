@@ -1,11 +1,14 @@
 <template>
     <div class="mapWrapper">
-        <p class="coordinate">Lat: 53.34912 Lng: 17.64003</p>
+        <p class="coordinate">
+            Lat: {{ discoLocationLatitudeText }} Lng:
+            {{ discoLocationLongitudeText }}
+        </p>
         <l-map
-            v-model="zoom"
             v-model:zoom="zoom"
-            :center="[53.34912, 17.64003]"
+            :center="mapLocation"
             class="map"
+            @move="onMapMove"
         >
             <l-tile-layer
                 url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
@@ -13,34 +16,59 @@
                 :maxZoom="20"
             ></l-tile-layer>
 
-            <l-marker :lat-lng="[53.34912, 17.64003]">
+            <l-marker
+                :lat-lng="discoLocationForMarker"
+                v-if="isDiscoLocationAvailable"
+            >
                 <l-icon :icon-url="iconUrl" :icon-size="iconSize" />
             </l-marker>
+
+            <l-marker :lat-lng="homeLocationForMarker"> </l-marker>
         </l-map>
-        <div class="locateHome">
+        <div class="locateHome" v-if="isDiscoLocationAvailable">
             <img
                 :src="arrowIcon"
-                style="transform: rotate(100deg)"
+                :style="`transform: rotate(${discoAngle}deg)`"
                 alt="arrow"
             />
         </div>
         <div
-            class="centerCam"
-            :style="{ background: setCenterCamColor }"
-            @click="centerCam = !centerCam"
+            class="followDiscoLocation"
+            :style="{ background: setFollowDiscoButtonColor }"
+            @click="followDiscoLocation = !followDiscoLocation"
         >
             <img :src="centerIcon" alt="center" />
         </div>
     </div>
 </template>
-<script>
-import { LMap, LTileLayer, LIcon, LMarker } from '@vue-leaflet/vue-leaflet';
-import 'leaflet/dist/leaflet.css';
-import Marker from '@/assets/img/parrot.png';
-import Arrow from '@/assets/img/arrow-bottom.svg';
-import Center from '@/assets/img/center.svg';
 
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+
+import { LMap, LTileLayer, LIcon, LMarker } from '@vue-leaflet/vue-leaflet';
+import { LatLng, latLng } from 'leaflet';
+
+import 'leaflet/dist/leaflet.css';
+import geometry from 'leaflet-geometryutil';
+
+const Marker = require('@/assets/img/parrot.png');
+const Arrow = require('@/assets/img/arrow-bottom.svg');
+const Center = require('@/assets/img/center.svg');
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        discoLocation: { latitude: number; longitude: number };
+        homeLocation: { latitude: number; longitude: number };
+        mapDefaultLocation: number[];
+        followDiscoLocation: boolean;
+        isDiscoLocationAvailable: boolean;
+        mapObject: any;
+        isMapLoaded: boolean;
+    }
+}
+
+export default defineComponent({
     components: {
         LMap,
         LTileLayer,
@@ -49,11 +77,67 @@ export default {
     },
     data() {
         return {
+            mapDefaultLocation: [53.34937, 17.64097],
             zoom: 15,
-            centerCam: false,
+            followDiscoLocation: true,
+            mapObject: null,
+            isMapLoaded: false,
         };
     },
     computed: {
+        ...mapState({
+            discoLocationForMarker: (state: any) => [
+                state.gps.latitude,
+                state.gps.longitude,
+            ],
+            discoLocation: (state: any) => ({
+                latitude: state.gps.latitude,
+                longitude: state.gps.longitude,
+            }),
+            homeLocationForMarker: (state: any) => [
+                state.home.latitude,
+                state.home.longitude,
+            ],
+            homeLocation: (state: any) => ({
+                latitude: state.home.latitude,
+                longitude: state.home.longitude,
+            }),
+            discoAngle: (state: any) => state.orientation.yaw,
+            discoLocationLatitudeText() {
+                return this.discoLocation.latitude.toFixed(6);
+            },
+            discoLocationLongitudeText() {
+                return this.discoLocation.longitude.toFixed(6);
+            },
+            isDiscoLocationAvailable() {
+                return (
+                    !!this.discoLocation.latitude &&
+                    !!this.discoLocation.longitude
+                );
+            },
+            homeAngle() {
+                if (!this.isDiscoLocationAvailable) return 0;
+
+                const discoLatLng: LatLng = latLng(
+                    this.discoLocation.latitude,
+                    this.discoLocation.longitude,
+                );
+
+                const homeLatLng: LatLng = latLng(
+                    this.homeLocation.latitude,
+                    this.homeLocation.longitude,
+                );
+
+                if (!this.mapObject) return 0;
+
+                return geometry.angle(this.mapObject, discoLatLng, homeLatLng);
+            },
+        }),
+        mapLocation() {
+            return this.followDiscoLocation && this.isDiscoLocationAvailable
+                ? [this.discoLocation.latitude, this.discoLocation.longitude]
+                : this.mapDefaultLocation;
+        },
         iconUrl() {
             return Marker;
         },
@@ -66,19 +150,24 @@ export default {
         centerIcon() {
             return Center;
         },
-        setCenterCamColor() {
-            if (this.centerCam) return '#27ae60';
+        setFollowDiscoButtonColor() {
+            if (this.followDiscoLocation) return '#27ae60';
         },
     },
-    methods: {},
-    mounted() {
-        setTimeout(() => {
-            document.querySelector(
-                '.leaflet-marker-icon',
-            ).style.transform += ` rotate(${45}deg)`;
-        }, 1000);
+    methods: {
+        setDiscoDegress(deg: number) {
+            const icon: any = document.querySelector('.leaflet-marker-icon');
+
+            if (icon) icon.style.transform += ` rotate(${deg}deg)`;
+        },
+        onMapLoaded(map) {
+            this.mapObject = map;
+            this.isMapLoaded = true;
+        },
+        onMapMove() {},
     },
-};
+    mounted() {},
+});
 </script>
 
 <style lang="scss">
@@ -109,7 +198,7 @@ export default {
 }
 
 .locateHome,
-.centerCam {
+.followDiscoLocation {
     position: absolute;
     bottom: 10px;
     z-index: 5;
@@ -126,7 +215,7 @@ export default {
     background: #3498db;
 }
 
-.centerCam {
+.followDiscoLocation {
     right: 10px;
     background: #3d3d3d;
     cursor: pointer;

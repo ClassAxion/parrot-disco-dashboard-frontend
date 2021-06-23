@@ -1,5 +1,5 @@
 <template>
-    <div class="ping">
+    <div class="ping" :style="{ 'background-color': color }">
         <span>{{ latency }} ms</span>
     </div>
 </template>
@@ -7,8 +7,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
-import { Store } from 'vuex';
-import { Store as StoreInfo } from '@/interfaces/Store';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {}
@@ -19,6 +17,15 @@ export default defineComponent({
         ...mapState({
             latency: (state: any) => state.network.latency,
         }),
+        color() {
+            if (this.latency < 50) {
+                return '#27ae60';
+            } else if (this.latency < 100) {
+                return '#e67e22';
+            } else {
+                return '#e74c3c';
+            }
+        },
     },
 });
 </script>
@@ -27,9 +34,6 @@ export default defineComponent({
 .ping {
     display: flex;
     align-items: center;
-    background-color: #e67e22; //orange
-    // background-color: #27ae60; //green
-    // background-color: #e74c3c; //red
     color: white;
     font-weight: 600;
     padding: 4px 6px;

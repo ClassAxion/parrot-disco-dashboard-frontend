@@ -4,11 +4,11 @@
             <Speed />
             <Altitude />
             <Distance />
-            <Server />
+            <GPS />
             <Battery />
         </div>
         <div class="center">
-            <span>In Flight</span>
+            <span>{{ flyingStateText }}</span>
         </div>
         <div class="right">
             <Gamepad />
@@ -23,9 +23,12 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+
 import Battery from './Battery.vue';
 import Ping from './Ping.vue';
-import Server from './Server.vue';
+import GPS from './GPS.vue';
 import Settings from './Settings.vue';
 import Health from './Health.vue';
 import Roll from './Roll.vue';
@@ -36,11 +39,17 @@ import Speed from './Speed.vue';
 import Altitude from './Altitude.vue';
 import Distance from './Distance.vue';
 
-export default {
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        flyingState: number;
+    }
+}
+
+export default defineComponent({
     components: {
         Battery,
         Ping,
-        Server,
+        GPS,
         Settings,
         Health,
         Roll,
@@ -51,7 +60,30 @@ export default {
         Altitude,
         Distance,
     },
-};
+    computed: {
+        ...mapState({
+            flyingState: (state: any) => state.state.flyingState,
+        }),
+        flyingStateText() {
+            switch (this.flyingState) {
+                case 0:
+                    return 'Landed';
+                case 1:
+                    return 'Taking off';
+                case 2:
+                    return 'Hovering';
+                case 3:
+                    return 'In Flight';
+                case 4:
+                    return 'Landing';
+                case 5:
+                    return 'Emergency';
+                default:
+                    return 'Unknown state ' + this.flyingState;
+            }
+        },
+    },
+});
 </script>
 
 <style lang="scss" scoped>

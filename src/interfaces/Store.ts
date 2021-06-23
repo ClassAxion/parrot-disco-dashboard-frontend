@@ -9,6 +9,7 @@ import { Permission } from './Permission';
 import { Piloting } from './Piloting';
 import { RTH } from './RTH';
 import { State } from './State';
+import { User } from './User';
 
 export interface Store {
     isConnected: boolean;
@@ -24,4 +25,5 @@ export interface Store {
     piloting: Piloting;
     rth: RTH;
     state: State;
+    user: User;
 }

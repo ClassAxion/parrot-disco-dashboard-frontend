@@ -13,25 +13,46 @@
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Instance as Peer } from 'simple-peer';
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        peer: Peer;
+        x: number;
+        y: number;
+        speed: number;
+        isMouseDown: boolean;
+        timeout: any;
+        alreadySentZero: boolean;
+    }
+}
+
+export default defineComponent({
+    inject: ['peer'],
     data() {
         return {
             x: 0,
             y: 0,
-            angle: 0,
             speed: 0,
             isMouseDown: false,
             timeout: null,
+            alreadySentZero: false,
         };
     },
     computed: {
+        ...mapState({
+            isEnabled: (state: any) => state.permission.canMoveCamera,
+            tiltMaxSpeed: (state: any) => state.camera.maxTiltSpeed,
+            panMaxSpeed: (state: any) => state.camera.maxPanSpeed,
+        }),
         style() {
             return {
                 '--x': `${this.x + 64}px`,
                 '--y': `${this.y + 64}px`,
                 '--speed': `${this.speed}px`,
-                '--angle': `${this.angle}deg`,
             };
         },
     },
@@ -68,6 +89,8 @@ export default {
             this.updatePosition(0, 0);
         },
         updatePosition(x, y) {
+            if (!this.isEnabled) return;
+
             const offset = 64 - 16;
             const radians = Math.atan2(y, x);
             this.speed = Math.min(
@@ -76,9 +99,52 @@ export default {
             );
             this.x = this.speed > offset ? Math.cos(radians) * offset : x;
             this.y = this.speed >= offset ? Math.sin(radians) * offset : y;
+
+            if (!this.x && !this.y) {
+                if (this.alreadySentZero) return;
+
+                this.alreadySentZero = true;
+            } else {
+                this.alreadySentZero = false;
+            }
+
+            const tilt: number = Number(
+                this.variableMap(
+                    this.parseValue(this.y, -45, 45),
+                    -45,
+                    45,
+                    this.tiltMaxSpeed,
+                    this.tiltMaxSpeed * -1,
+                ).toFixed(0),
+            );
+
+            const pan: number = Number(
+                this.variableMap(
+                    this.parseValue(this.x, -45, 45),
+                    -45,
+                    45,
+                    this.panMaxSpeed * -1,
+                    this.panMaxSpeed,
+                ).toFixed(0),
+            );
+
+            this.peer.send(
+                JSON.stringify({
+                    action: 'camera',
+                    data: { type: 'degrees', tilt, pan },
+                }),
+            );
         },
+        parseValue(value, min, max) {
+            if (value < min) return min;
+            if (value > max) return max;
+
+            return value;
+        },
+        variableMap: (value, inMin, inMax, outMin, outMax) =>
+            ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin,
     },
-};
+});
 </script>
 
 <style lang="scss" scoped>
