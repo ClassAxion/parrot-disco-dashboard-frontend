@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import { Socket } from 'socket.io-client';
+import { defineComponent } from 'vue';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
@@ -11,7 +12,7 @@ declare module '@vue/runtime-core' {
     }
 }
 
-export default {
+export default defineComponent({
     inject: ['socket'],
     methods: {
         onClick() {
@@ -20,5 +21,5 @@ export default {
             this.$router.push('/');
         },
     },
-};
+});
 </script>
