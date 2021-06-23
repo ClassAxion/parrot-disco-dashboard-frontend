@@ -14,8 +14,14 @@ import Map from '@/components/Map/Map.vue';
 import Buttons from '@/components/Buttons/Buttons.vue';
 import Joysticks from '@/components/Joysticks/Joysticks.vue';
 import Stream from '@/components/Stream/Stream.vue';
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
 
-export default {
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {}
+}
+
+export default defineComponent({
     components: {
         Navbar,
         Map,
@@ -23,7 +29,15 @@ export default {
         Joysticks,
         Stream,
     },
-};
+    computed: {
+        ...mapState({
+            isConnected: (state: any) => state.isConnected,
+        }),
+    },
+    mounted() {
+        if (!this.isConnected) window.location.href = '/';
+    },
+});
 </script>
 
 <style lang="scss">

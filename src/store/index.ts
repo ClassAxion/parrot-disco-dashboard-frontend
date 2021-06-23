@@ -9,6 +9,8 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
     const store: Store<StoreInfo> = createStore({
         state: {
             isConnected: false,
+            isGamePadActive: false,
+            animationFrame: 0,
             stream: null,
             user: {
                 username: '',
@@ -218,6 +220,218 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 store.state.health.isGoodToTakeOff = false;
             }
         }
+    });
+
+    const buttonMap: { [key: string]: number } = {
+        'map-auto-move': 0,
+        'circle-ccw': 16,
+        'circle-cw': 17,
+        'start-rth': 18,
+        'stop-rth': 19,
+        'camera-center': 27,
+        'take-off': 20,
+        'start-flight-plan-land': 10,
+        'start-flight-plan-test': 12,
+    };
+
+    const axisMap: { [key: string]: number } = {
+        'camera-pan': 0,
+        'camera-tilt': 1,
+        'control-mode': 2,
+        roll: 3,
+        pitch: 4,
+        'control-mode-inverted': 5,
+    };
+
+    const variableMap = (value, inMin, inMax, outMin, outMax) =>
+        ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+
+    const lastSentCameraMovement: { tilt: number; pan: number } = {
+        tilt: 0,
+        pan: 0,
+    };
+
+    let lastAction: string = '';
+
+    const timings: { [key: string]: number } = {};
+
+    const run = () => {
+        if (!store.state.isGamePadActive) return;
+
+        const gamepadsRaw = navigator.getGamepads();
+
+        if (!gamepadsRaw) return;
+
+        const gamepads = Array.from(gamepadsRaw).filter(Boolean);
+
+        if (!gamepads || gamepads.length === 0 || !gamepads[0]) return;
+
+        const gamepad: Gamepad = gamepads[0];
+
+        const buttons = gamepad.buttons;
+
+        for (const buttonIdRaw in buttons) {
+            const button: GamepadButton = buttons[buttonIdRaw];
+
+            const buttonId: number = Number(buttonIdRaw);
+
+            const timing: number = timings['b-' + buttonId];
+
+            if (button.pressed && (!timing || Date.now() - timing > 500)) {
+                timings['b-' + buttonId] = Date.now();
+
+                if (buttonId === buttonMap['camera-center']) {
+                    peer.send(JSON.stringify({ action: 'camera-center' }));
+                }
+
+                if (buttonId === buttonMap['take-off']) {
+                    peer.send(JSON.stringify({ action: 'takeOff' }));
+                }
+
+                if (buttonId === buttonMap['circle-ccw']) {
+                    peer.send(
+                        JSON.stringify({ action: 'circle', data: 'CCW' }),
+                    );
+                }
+
+                if (buttonId === buttonMap['circle-cw']) {
+                    peer.send(JSON.stringify({ action: 'circle', data: 'CW' }));
+                }
+
+                if (buttonId === buttonMap['map-auto-move']) {
+                    // TODO
+                }
+
+                if (buttonId === buttonMap['start-flight-plan-land']) {
+                    peer.send(
+                        JSON.stringify({
+                            action: 'flightPlanStart',
+                            data: 'land',
+                            force: true,
+                        }),
+                    );
+                }
+
+                if (buttonId === buttonMap['start-flight-plan-test']) {
+                    peer.send(
+                        JSON.stringify({
+                            action: 'flightPlanStart',
+                            data: 'test',
+                            force: true,
+                        }),
+                    );
+                }
+
+                if (buttonId === buttonMap['start-rth']) {
+                    peer.send(JSON.stringify({ action: 'rth', data: true }));
+                }
+
+                if (buttonId === buttonMap['stop-rth']) {
+                    peer.send(JSON.stringify({ action: 'rth', data: false }));
+                }
+            }
+        }
+
+        const axes = gamepad.axes;
+
+        const isCameraMovement = axes[axisMap['control-mode']] === 1;
+
+        if (isCameraMovement) {
+            if (lastAction !== 'camera') {
+                store.state.piloting.pitch = 0;
+                store.state.piloting.roll = 0;
+
+                lastAction = 'camera';
+            }
+
+            let tiltRaw: number = axes[axisMap['camera-tilt']];
+            let panRaw: number = axes[axisMap['camera-pan']];
+
+            if (tiltRaw < 0.01 && tiltRaw > -0.01) tiltRaw = 0;
+            if (panRaw < 0.01 && panRaw > -0.01) panRaw = 0;
+
+            const tilt: number = Number(
+                variableMap(tiltRaw, -1, 1, -20, 20).toFixed(0),
+            );
+
+            const pan: number = Number(
+                variableMap(panRaw, -1, 1, -20, 20).toFixed(0),
+            );
+
+            if (
+                lastSentCameraMovement.tilt !== tilt ||
+                lastSentCameraMovement.pan !== pan
+            ) {
+                lastSentCameraMovement.tilt = tilt;
+                lastSentCameraMovement.pan = pan;
+
+                store.state.camera.pan = pan;
+                store.state.camera.tilt = tilt;
+
+                peer.send(
+                    JSON.stringify({
+                        action: 'camera',
+                        data: { type: 'degrees', tilt, pan },
+                    }),
+                );
+            }
+        } else {
+            if (lastAction !== 'drone') {
+                store.state.piloting.pitch = 0;
+                store.state.piloting.roll = 0;
+
+                lastAction = 'drone';
+            }
+
+            let rollRaw: number = axes[axisMap.roll];
+            let pitchRaw: number = axes[axisMap.pitch];
+
+            if (rollRaw < 0.01 && rollRaw > -0.01) rollRaw = 0;
+            if (pitchRaw < 0.01 && pitchRaw > -0.01) pitchRaw = 0;
+
+            const roll: number = Number(
+                variableMap(rollRaw, -1, 1, -75, 75).toFixed(0),
+            );
+
+            const pitch: number = Number(
+                variableMap(pitchRaw, -1, 1, -75, 75).toFixed(0),
+            );
+
+            peer.send(
+                JSON.stringify({
+                    action: 'move',
+                    data: { pitch, roll },
+                }),
+            );
+        }
+
+        store.state.animationFrame = requestAnimationFrame(run);
+    };
+
+    window.addEventListener('gamepadconnected', (e: any) => {
+        const o: any = navigator.getGamepads()[e.gamepad.index];
+
+        if (!o) return;
+
+        const gamepad: Gamepad = o;
+
+        if (
+            gamepad.id.includes('0738') &&
+            gamepad.id.includes('2218') &&
+            !store.state.isGamePadActive
+        ) {
+            store.state.isGamePadActive = true;
+
+            store.state.animationFrame = requestAnimationFrame(run);
+        } else {
+            console.error(
+                `Got invalid gamepad: ${gamepad.id} with index ${gamepad.index}`,
+            );
+        }
+    });
+
+    window.addEventListener('gamepaddisconnected', () => {
+        store.state.isGamePadActive = false;
     });
 
     return store;
