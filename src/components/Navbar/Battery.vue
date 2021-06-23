@@ -1,11 +1,31 @@
 <template>
-    <div class="batteryWrapper">
+    <div class="batteryWrapper" title="Battery percentage">
         <div class="battery">
-            <div class="battery-level" style="width:50%;"></div>
+            <div class="battery-level" :style="{ width: percent + '%' }"></div>
         </div>
-        <span class="batteryValue">100%</span>
+        <span class="batteryValue">{{ percentText }}</span>
     </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {}
+}
+
+export default defineComponent({
+    computed: {
+        ...mapState({
+            percent: (state: any) => state.battery.percent || 0,
+            percentText() {
+                return !this.percent ? '?' : this.percent + '%';
+            },
+        }),
+    },
+});
+</script>
 
 <style lang="scss" scoped>
 .battery {

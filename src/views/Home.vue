@@ -83,10 +83,13 @@ import { useToast } from 'vue-toastification';
 import { Socket } from 'socket.io-client';
 import axios from 'axios';
 import { defineComponent } from 'vue';
+import { Store as StoreInfo } from '@/interfaces/Store';
+import { Store } from 'vuex';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         socket: Socket;
+        $store: Store<StoreInfo>;
         selectedView: string;
         views: string[];
         token: string;
@@ -109,7 +112,7 @@ export default defineComponent({
     },
     mounted() {
         this.socket.once('connect', () => {
-            this.sendDetails();
+            this.setDetails();
 
             switch (this.selectedView) {
                 case 'Dashboard':
@@ -168,12 +171,10 @@ export default defineComponent({
         connect() {
             this.socket.connect();
         },
-        sendDetails() {
-            this.socket.emit('init', {
-                username: this.username,
-                token: this.token,
-                selectedView: this.selectedView,
-            });
+        setDetails() {
+            this.$store.state.user.token = this.token;
+            this.$store.state.user.username = this.username;
+            this.$store.state.user.view = this.selectedView;
         },
     },
 });

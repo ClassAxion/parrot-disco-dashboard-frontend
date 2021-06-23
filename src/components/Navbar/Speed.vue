@@ -1,9 +1,37 @@
 <template>
     <div class="speed">
         <p class="name">Speed</p>
-        <p>30 <span class="unit">km/h</span></p>
+        <p>
+            {{ speedKmh }} <span class="unit">{{ speedUnit }}</span>
+        </p>
     </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        speed: number;
+    }
+}
+
+export default defineComponent({
+    computed: {
+        ...mapState({
+            speed: (state: any) => state.orientation.speed,
+        }),
+        speedUnit: () => 'km/h',
+        speedMs() {
+            return this.speed.toFixed(0);
+        },
+        speedKmh() {
+            return (this.speed * 3.6).toFixed(0);
+        },
+    },
+});
+</script>
 
 <style lang="scss" scoped>
 .speed {

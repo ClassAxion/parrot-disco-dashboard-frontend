@@ -5,20 +5,24 @@
 <script lang="ts">
 import { Socket } from 'socket.io-client';
 import { defineComponent } from 'vue';
+import { Instance as Peer } from 'simple-peer';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         socket: Socket;
+        peer: Peer;
     }
 }
 
 export default defineComponent({
-    inject: ['socket'],
+    inject: ['socket', 'peer'],
     methods: {
         onClick() {
             this.socket.disconnect();
+            this.peer.destroy();
 
-            this.$router.push('/');
+            //this.$router.push('/');
+            window.location.href = '/';
         },
     },
 });

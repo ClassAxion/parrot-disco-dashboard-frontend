@@ -10,6 +10,11 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
         state: {
             isConnected: false,
             stream: null,
+            user: {
+                username: '',
+                token: '',
+                view: '',
+            },
             battery: {
                 percent: 0,
                 voltage: 0,
@@ -30,6 +35,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 availableSatellites: 0,
             },
             health: {
+                isGoodToTakeOff: true,
                 magnetoCalibrationRequired: false,
                 imuState: true,
                 barometerState: true,
@@ -40,8 +46,8 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 motorState: true,
             },
             home: {
-                latitude: 0,
-                longitude: 0,
+                latitude: 53.34937,
+                longitude: 17.64097,
                 altitude: 0,
                 isUsing: false,
             },
@@ -101,7 +107,16 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
     peer.on('data', data => {
         const packet = JSON.parse(data.toString());
 
-        if (packet.action === 'ping') {
+        if (packet.action === 'init') {
+            sendPacket({
+                action: 'init',
+                data: {
+                    username: store.state.user.username,
+                    token: store.state.user.token,
+                    view: store.state.user.view,
+                },
+            });
+        } else if (packet.action === 'ping') {
             sendPacket({ action: 'pong', data: packet.data });
         } else if (packet.action === 'latency') {
             const latency: number = packet.data;
@@ -171,13 +186,36 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             const { maxSpeed, orientation } = packet.data;
 
             if (maxSpeed !== undefined) {
-                store.state.camera.maxPanSpeed = maxSpeed.cameraMaxPanSpeed;
-                store.state.camera.maxTiltSpeed = maxSpeed.cameraMaxTiltSpeed;
+                store.state.camera.maxPanSpeed = maxSpeed.maxPanSpeed;
+                store.state.camera.maxTiltSpeed = maxSpeed.maxTiltSpeed;
             }
 
             if (orientation !== undefined) {
                 store.state.camera.currentPanPosition = orientation.pan;
                 store.state.camera.currentTiltPosition = orientation.tilt;
+            }
+        } else if (packet.action === 'check') {
+            const {
+                lastRTHStatus,
+                lastHomeTypeStatus,
+                lastCalibrationStatus,
+                lastHardwareStatus,
+            } = packet.data;
+
+            if (lastRTHStatus !== undefined && !lastRTHStatus) {
+                store.state.health.isGoodToTakeOff = false;
+            }
+
+            if (lastHomeTypeStatus !== undefined && !lastHomeTypeStatus) {
+                store.state.health.isGoodToTakeOff = false;
+            }
+
+            if (lastCalibrationStatus !== undefined && !lastCalibrationStatus) {
+                store.state.health.isGoodToTakeOff = false;
+            }
+
+            if (lastHardwareStatus !== undefined && !lastHardwareStatus) {
+                store.state.health.isGoodToTakeOff = false;
             }
         }
     });

@@ -11,6 +11,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "leaflet": "^1.7.1",
+    "leaflet-geometryutil": "^0.10.0",
     "simple-peer": "^9.11.0",
     "socket.io-client": "^4.1.2",
     "vue": "^3.0.0",
@@ -20,6 +21,7 @@
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.7.3",
     "@types/simple-peer": "^9.11.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",

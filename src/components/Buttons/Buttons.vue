@@ -44,11 +44,6 @@ export default {
         }
     }
 
-    .disabled {
-        opacity: 0.4 !important;
-        cursor: default;
-    }
-
     .poland {
         margin: 0;
         color: white;

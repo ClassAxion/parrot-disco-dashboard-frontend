@@ -1,9 +1,30 @@
 <template>
-    <div class="altitude">
+    <div class="altitude" :title="'GPS altitude: ' + gpsAltitude + 'm'">
         <p class="name">Altitude</p>
-        <span>30 <span class="unit">m</span></span>
+        <span>{{ altitudeCalculated }} <span class="unit">m</span></span>
     </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {}
+}
+
+export default defineComponent({
+    computed: {
+        ...mapState({
+            altitude: (state: any) => state.orientation.altitude || 0,
+            gpsAltitude: (state: any) => state.gps.altitude,
+            altitudeCalculated() {
+                return this.altitude;
+            },
+        }),
+    },
+});
+</script>
 
 <style lang="scss" scoped>
 .altitude {

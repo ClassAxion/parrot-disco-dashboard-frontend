@@ -1,3 +1,3 @@
 <template>
-    <button>Emergency</button>
+    <button class="disabled">Emergency</button>
 </template>

@@ -1,18 +1,26 @@
 <template>
     <div class="camera">
-        <video :src="setVideo" loop autoplay></video>
+        <video :srcObject="stream" autoplay></video>
     </div>
 </template>
 
-<script>
-import Video from '@/assets/video/bg.mp4';
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        stream: any;
+    }
+}
+
+export default defineComponent({
     computed: {
-        setVideo() {
-            return Video;
-        },
+        ...mapState({
+            stream: (state: any) => state.stream,
+        }),
     },
-};
+});
 </script>
 
 <style lang="scss" scoped>
