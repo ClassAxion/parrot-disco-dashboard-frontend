@@ -1,8 +1,27 @@
 <template>
     <div class="ping">
-        <span>12 ms</span>
+        <span>{{ latency }} ms</span>
     </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'vuex';
+import { Store } from 'vuex';
+import { Store as StoreInfo } from '@/interfaces/Store';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {}
+}
+
+export default defineComponent({
+    computed: {
+        ...mapState({
+            latency: (state: any) => state.network.latency,
+        }),
+    },
+});
+</script>
 
 <style lang="scss" scoped>
 .ping {
