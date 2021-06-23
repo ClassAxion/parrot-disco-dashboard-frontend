@@ -26,6 +26,16 @@ export default function(socket: Socket): Store<StoreInfo> {
                 isFixed: false,
                 availableSatellites: 0,
             },
+            health: {
+                magnetoCalibrationRequired: false,
+                imuState: true,
+                barometerState: true,
+                ultrasoundState: true,
+                gpsState: true,
+                magnetometerState: true,
+                verticalCameraState: true,
+                motorState: true,
+            },
             home: {
                 latitude: 0,
                 longitude: 0,
@@ -56,10 +66,15 @@ export default function(socket: Socket): Store<StoreInfo> {
                 delay: 0,
                 homeType: '',
             },
+            state: {
+                flyingState: 0,
+                canTakeOff: false,
+                isDiscoConnected: false,
+                flyingTime: 0,
+            },
         },
         mutations: {},
         actions: {},
-        modules: {},
     });
 
     socket.on('connect', () => (store.state.isConnected = true));
