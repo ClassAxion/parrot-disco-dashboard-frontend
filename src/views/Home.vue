@@ -82,6 +82,7 @@
 import { useToast } from 'vue-toastification';
 import { Socket } from 'socket.io-client';
 import axios from 'axios';
+import { defineComponent } from 'vue';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
@@ -97,7 +98,7 @@ declare module '@vue/runtime-core' {
 const Video = require('@/assets/video/bg.mp4');
 const Parrot = require('@/assets/img/parrot-truncate.png');
 
-export default {
+export default defineComponent({
     inject: ['socket'],
     setup() {
         // Get toast interface
@@ -175,7 +176,7 @@ export default {
             });
         },
     },
-};
+});
 </script>
 
 <style lang="scss" scoped>
