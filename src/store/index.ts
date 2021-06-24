@@ -152,9 +152,33 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 store.state.state.isDiscoConnected = isDiscoConnected;
             }
         } else if (packet.action === 'permission') {
-            const permission: Permission = packet.data;
+            const {
+                isSuperUser,
+                canPilotingPitch,
+                canPilotingRoll,
+                canMoveCamera,
+                canUseAutonomy,
+            } = packet.data;
 
-            store.state.permission = permission;
+            if (isSuperUser !== undefined) {
+                store.state.permission.isSuperUser = isSuperUser
+            }
+
+            if (canPilotingPitch !== undefined) {
+                store.state.permission.canPilotingPitch = canPilotingPitch
+            }
+            
+            if (canPilotingRoll !== undefined) {
+                store.state.permission.canPilotingRoll = canPilotingRoll
+            }
+            
+            if (canMoveCamera !== undefined) {
+                store.state.permission.canMoveCamera = canMoveCamera
+            }
+            
+            if (canUseAutonomy !== undefined) {
+                store.state.permission.canUseAutonomy = canUseAutonomy
+            }
         } else if (packet.action === 'gps') {
             const { isFixed, satellites, location } = packet.data;
 
