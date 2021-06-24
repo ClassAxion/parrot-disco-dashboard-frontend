@@ -3,9 +3,11 @@ import { createStore, Store } from 'vuex';
 
 import { Store as StoreInfo } from '@/interfaces/Store';
 import { Instance as Peer } from 'simple-peer';
-import { Permission } from '@/interfaces/Permission';
+import { useToast } from 'vue-toastification';
 
 export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
+    const toast = useToast();
+
     const store: Store<StoreInfo> = createStore({
         state: {
             isConnected: false,
@@ -118,6 +120,28 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                     view: store.state.user.view,
                 },
             });
+        } else if (packet.action === 'alert') {
+            if (typeof packet.data === 'string') {
+                console.info(packet.data);
+            } else {
+                const { level, message } = packet.data;
+
+                switch (level) {
+                    case 'danger':
+                    case 'error':
+                        toast.error(message);
+                        break;
+                    case 'warning':
+                        toast.warning(message);
+                        break;
+                    case 'success':
+                        toast.success(message);
+                        break;
+                    case 'info':
+                        toast.info(message);
+                        break;
+                }
+            }
         } else if (packet.action === 'ping') {
             sendPacket({ action: 'pong', data: packet.data });
         } else if (packet.action === 'latency') {
@@ -161,23 +185,23 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             } = packet.data;
 
             if (isSuperUser !== undefined) {
-                store.state.permission.isSuperUser = isSuperUser
+                store.state.permission.isSuperUser = isSuperUser;
             }
 
             if (canPilotingPitch !== undefined) {
-                store.state.permission.canPilotingPitch = canPilotingPitch
+                store.state.permission.canPilotingPitch = canPilotingPitch;
             }
-            
+
             if (canPilotingRoll !== undefined) {
-                store.state.permission.canPilotingRoll = canPilotingRoll
+                store.state.permission.canPilotingRoll = canPilotingRoll;
             }
-            
+
             if (canMoveCamera !== undefined) {
-                store.state.permission.canMoveCamera = canMoveCamera
+                store.state.permission.canMoveCamera = canMoveCamera;
             }
-            
+
             if (canUseAutonomy !== undefined) {
-                store.state.permission.canUseAutonomy = canUseAutonomy
+                store.state.permission.canUseAutonomy = canUseAutonomy;
             }
         } else if (packet.action === 'gps') {
             const { isFixed, satellites, location } = packet.data;
