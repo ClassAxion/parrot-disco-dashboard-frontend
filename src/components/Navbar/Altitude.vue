@@ -19,7 +19,7 @@ export default defineComponent({
             altitude: (state: any) => state.orientation.altitude || 0,
             gpsAltitude: (state: any) => state.gps.altitude,
             altitudeCalculated() {
-                return this.altitude;
+                return this.altitude.toFixed(0);
             },
         }),
     },
