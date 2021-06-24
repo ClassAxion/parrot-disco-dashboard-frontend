@@ -480,6 +480,13 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
     window.addEventListener('gamepaddisconnected', () => {
         store.state.isGamePadActive = false;
+
+        peer.send(
+            JSON.stringify({
+                action: 'move',
+                data: { pitch: 0, roll: 0 },
+            }),
+        );
     });
 
     return store;
