@@ -225,9 +225,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             store.state.orientation.roll = roll;
             store.state.orientation.yaw = yaw;
         } else if (packet.action === 'altitude') {
-            const { altitude } = packet.data;
+            //const { altitude } = packet.data;
 
-            store.state.orientation.altitude = altitude;
+            store.state.orientation.altitude = packet.data;
         } else if (packet.action === 'speed') {
             const speed = packet.data;
 

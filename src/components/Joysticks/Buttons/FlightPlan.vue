@@ -41,6 +41,7 @@ declare module '@vue/runtime-core' {
 }
 
 export default defineComponent({
+    inject: ['peer'],
     data() {
         return {
             show: false,
@@ -51,8 +52,7 @@ export default defineComponent({
     computed: {
         ...mapState({
             isEnabled: (state: any) =>
-                state.state.flyingState !== 0 &&
-                state.permission.canUseAutonomy,
+                state.state.flyingState !== 0 && state.permission.isSuperUser,
         }),
         isEnabledClass() {
             return this.isEnabled ? '' : 'disabled';
