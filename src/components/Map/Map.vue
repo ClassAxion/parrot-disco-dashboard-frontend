@@ -1,12 +1,13 @@
 <template>
     <div class="mapWrapper">
         <p class="coordinate">
-            {{ discoAngle }} Lat: {{ discoLocationLatitudeText }} Lng:
+            Lat: {{ discoLocationLatitudeText }} Lng:
             {{ discoLocationLongitudeText }}
         </p>
         <l-map
             v-model:zoom="zoom"
             :center="mapLocation"
+            v-on:ready="onMapLoaded"
             class="map"
             @move="onMapMove"
         >
@@ -28,7 +29,7 @@
         <div class="locateHome" v-if="isDiscoLocationAvailable">
             <img
                 :src="arrowIcon"
-                :style="`transform: rotate(${discoAngle}deg)`"
+                :style="`transform: rotate(${homeAngle}deg)`"
                 alt="arrow"
             />
         </div>
@@ -65,6 +66,10 @@ declare module '@vue/runtime-core' {
         isDiscoLocationAvailable: boolean;
         mapObject: any;
         isMapLoaded: boolean;
+        setDiscoDegressTick: any;
+        setDiscoDegress: any;
+        variableMap: any;
+        discoAngle: number;
     }
 }
 
@@ -130,7 +135,7 @@ export default defineComponent({
 
                 if (!this.mapObject) return 0;
 
-                return geometry.angle(this.mapObject, discoLatLng, homeLatLng);
+                return geometry.angle(this.mapObject, homeLatLng, discoLatLng);
             },
         }),
         mapLocation() {
@@ -156,17 +161,45 @@ export default defineComponent({
     },
     methods: {
         setDiscoDegress(deg: number) {
-            const icon: any = document.querySelector('.leaflet-marker-icon');
+            const icon: any = document.querySelector(
+                '.leaflet-marker-icon[src*=parrot]',
+            );
 
-            if (icon) icon.style.transform += ` rotate(${deg}deg)`;
+            if (icon) {
+                if (!icon.style.transform.includes('rotate')) {
+                    icon.style.transform += ` rotate(${deg}deg)`;
+                } else {
+                    icon.style.transform = icon.style.transform.replace(
+                        /rotate\(([0-9]+)deg\)/,
+                        `rotate(${deg}deg)`,
+                    );
+                }
+            }
         },
         onMapLoaded(map) {
             this.mapObject = map;
             this.isMapLoaded = true;
         },
         onMapMove() {},
+        variableMap: (value, inMin, inMax, outMin, outMax) =>
+            ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin,
+        setDiscoDegressTick() {
+            const degress = this.variableMap(
+                this.discoAngle,
+                -180,
+                180,
+                0,
+                360,
+            );
+
+            this.setDiscoDegress(degress);
+
+            setTimeout(this.setDiscoDegressTick, 1000);
+        },
     },
-    mounted() {},
+    created() {
+        setImmediate(this.setDiscoDegressTick);
+    },
 });
 </script>
 
