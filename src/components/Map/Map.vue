@@ -184,13 +184,19 @@ export default defineComponent({
         variableMap: (value, inMin, inMax, outMin, outMax) =>
             ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin,
         setDiscoDegressTick() {
-            const degress = this.variableMap(
-                this.discoAngle,
-                -180,
-                180,
-                0,
-                360,
-            );
+            let degress =
+                Number(
+                    this.variableMap(
+                        this.discoAngle,
+                        -180,
+                        180,
+                        0,
+                        360,
+                    ).toFixed(0),
+                ) - 90;
+
+            if (degress > 360) degress -= 360;
+            if (degress < 0) degress = 360 - degress * -1;
 
             this.setDiscoDegress(degress);
 
