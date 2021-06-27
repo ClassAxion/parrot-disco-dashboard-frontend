@@ -204,7 +204,7 @@ export default defineComponent({
 
             this.setDiscoDegress(degress);
 
-            setTimeout(this.setDiscoDegressTick, 100);
+            setTimeout(this.setDiscoDegressTick, 50);
         },
     },
     created() {
