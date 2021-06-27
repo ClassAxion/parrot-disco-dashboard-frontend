@@ -1,7 +1,8 @@
 <template>
     <div class="mapWrapper">
         <p class="coordinate">
-            {{ discoDegress }} Lat: {{ discoLocationLatitudeText }} Lng:
+            {{ discoAngle }} {{ discoDegress }} Lat:
+            {{ discoLocationLatitudeText }} Lng:
             {{ discoLocationLongitudeText }}
         </p>
         <l-map
