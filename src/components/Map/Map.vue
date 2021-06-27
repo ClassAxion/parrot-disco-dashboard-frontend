@@ -1,7 +1,7 @@
 <template>
     <div class="mapWrapper">
         <p class="coordinate">
-            {{ discoAngle }} {{ discoDegress }} Lat:
+            Lat:
             {{ discoLocationLatitudeText }} Lng:
             {{ discoLocationLongitudeText }}
         </p>
@@ -197,14 +197,14 @@ export default defineComponent({
                         0,
                         360,
                     ).toFixed(0),
-                ) - 90;
+                ) - 180;
 
             if (degress > 360) degress -= 360;
             if (degress < 0) degress = 360 - degress * -1;
 
             this.setDiscoDegress(degress);
 
-            setTimeout(this.setDiscoDegressTick, 1000);
+            setTimeout(this.setDiscoDegressTick, 100);
         },
     },
     created() {
