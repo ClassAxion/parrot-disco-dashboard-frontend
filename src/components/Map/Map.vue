@@ -1,7 +1,7 @@
 <template>
     <div class="mapWrapper">
         <p class="coordinate">
-            Lat: {{ discoLocationLatitudeText }} Lng:
+            {{ discoDegress }} Lat: {{ discoLocationLatitudeText }} Lng:
             {{ discoLocationLongitudeText }}
         </p>
         <l-map
@@ -70,6 +70,7 @@ declare module '@vue/runtime-core' {
         setDiscoDegress: any;
         variableMap: any;
         discoAngle: number;
+        discoDegress: number;
     }
 }
 
@@ -166,6 +167,8 @@ export default defineComponent({
             );
 
             if (icon) {
+                this.discoDegress = deg;
+
                 if (!icon.style.transform.includes('rotate')) {
                     icon.style.transform += ` rotate(${deg}deg)`;
                 } else {
