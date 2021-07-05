@@ -12,9 +12,11 @@
 </template>
 
 <script lang="ts">
+// TODO Delete unused code after testing
+
 import { Instance as Peer } from 'simple-peer';
 import { defineComponent } from 'vue';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
@@ -25,6 +27,7 @@ declare module '@vue/runtime-core' {
         isMouseDown: boolean;
         timeout: any;
         alreadySentZero: boolean;
+        setPiloting: Function;
     }
 }
 
@@ -37,7 +40,6 @@ export default defineComponent({
             speed: 0,
             isMouseDown: false,
             timeout: null,
-            alreadySentZero: false,
         };
     },
     computed: {
@@ -56,6 +58,9 @@ export default defineComponent({
         },
     },
     methods: {
+        ...mapActions({
+            updatePiloting: 'updatePiloting',
+        }),
         handleStart() {
             this.isMouseDown = true;
             clearTimeout(this.timeout);
@@ -98,11 +103,21 @@ export default defineComponent({
                 64,
             );
 
-            if (this.isRollEnabled)
-                this.x = this.speed > offset ? Math.cos(radians) * offset : x;
+            const deadBand: number = 7;
 
-            if (this.isPitchEnabled)
-                this.y = this.speed >= offset ? Math.sin(radians) * offset : y;
+            if (this.isRollEnabled) {
+                const rawX: number =
+                    this.speed > offset ? Math.cos(radians) * offset : x;
+
+                this.x = rawX < deadBand && rawX > deadBand * -1 ? 0 : rawX;
+            }
+
+            if (this.isPitchEnabled) {
+                const rawY: number =
+                    this.speed >= offset ? Math.sin(radians) * offset : y;
+
+                this.y = rawY < deadBand && rawY > deadBand * -1 ? 0 : rawY;
+            }
 
             if (!this.x && !this.y) {
                 if (this.alreadySentZero) return;
@@ -132,12 +147,16 @@ export default defineComponent({
                 ).toFixed(0),
             );
 
+            this.updatePiloting({ roll, pitch });
+
+            /*
             this.peer.send(
                 JSON.stringify({
                     action: 'move',
                     data: { pitch, roll },
                 }),
             );
+            */
         },
         parseValue(value, min, max) {
             if (value < min) return min;

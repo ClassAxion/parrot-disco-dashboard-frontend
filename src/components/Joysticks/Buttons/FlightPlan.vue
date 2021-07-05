@@ -1,5 +1,5 @@
 <template>
-    <div class="select" @click="show = !show" :class="isEnabledClass">
+    <div class="select" @click="toggleShow" :class="isEnabledClass">
         <span>{{
             selectedFlightPlan ? selectedFlightPlan : 'Flight Plan'
         }}</span>
@@ -71,6 +71,11 @@ export default defineComponent({
                     force: true,
                 }),
             );
+        },
+        toggleShow() {
+            if (!this.isEnabled) return;
+
+            this.show = !this.show;
         },
     },
 });

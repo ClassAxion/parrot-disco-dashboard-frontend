@@ -89,9 +89,54 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 flyingTime: 0,
             },
         },
-        mutations: {},
-        actions: {},
+        mutations: {
+            setPiloting(
+                state: StoreInfo,
+                piloting: { pitch?: number; roll?: number; throttle?: number },
+            ) {
+                if (piloting.pitch !== undefined) {
+                    state.piloting.pitch = piloting.pitch;
+                }
+
+                if (piloting.roll !== undefined) {
+                    state.piloting.roll = piloting.roll;
+                }
+
+                if (piloting.throttle !== undefined) {
+                    state.piloting.throttle = piloting.throttle;
+                }
+            },
+        },
+        actions: {
+            updatePiloting(
+                { commit },
+                piloting: { pitch?: number; roll?: number; throttle?: number },
+            ) {
+                commit('setPiloting', piloting);
+            },
+        },
     });
+
+    store.watch(
+        function(state) {
+            return state.piloting;
+        },
+        function(piloting: { pitch: number; roll: number; throttle: number }) {
+            peer.send(
+                JSON.stringify({
+                    action: 'move',
+                    data: {
+                        pitch: piloting.pitch,
+                        roll: piloting.roll,
+                        throttle: piloting.throttle,
+                    },
+                }),
+            );
+        },
+        {
+            deep: true,
+        },
+    );
 
     socket.on('connect', () => (store.state.isConnected = true));
     socket.on('disconnect', () => (store.state.isConnected = false));
@@ -445,12 +490,16 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 variableMap(pitchRaw, -1, 1, -75, 75).toFixed(0),
             );
 
+            /*
             peer.send(
                 JSON.stringify({
                     action: 'move',
                     data: { pitch, roll },
                 }),
             );
+            */
+
+            store.commit('setPiloting', { pitch, roll });
         }
 
         store.state.animationFrame = requestAnimationFrame(run);
