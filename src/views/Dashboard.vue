@@ -35,7 +35,8 @@ export default defineComponent({
         }),
     },
     mounted() {
-        if (!this.isConnected) window.location.href = '/';
+        if (!process.env.NO_DISCO && !this.isConnected)
+            window.location.href = '/';
     },
 });
 </script>
