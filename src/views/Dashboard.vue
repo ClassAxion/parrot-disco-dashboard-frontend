@@ -35,7 +35,7 @@ export default defineComponent({
         }),
     },
     mounted() {
-        if (!process.env.NO_DISCO && !this.isConnected)
+        if (!process.env.VUE_APP_NO_DISCO && !this.isConnected)
             window.location.href = '/';
     },
 });
