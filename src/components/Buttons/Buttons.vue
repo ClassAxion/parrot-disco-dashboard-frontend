@@ -8,11 +8,14 @@
 </template>
 
 <script>
+import Land from './Land.vue';
 import TakeOff from './TakeOff.vue';
 import Disconnect from './Disconnect.vue';
 import Emergency from './Emergency.vue';
+
 export default {
     components: {
+        Land,
         TakeOff,
         Disconnect,
         Emergency,
