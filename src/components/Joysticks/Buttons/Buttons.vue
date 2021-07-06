@@ -5,6 +5,7 @@
         <CircleRight />
         <ReturnToHome />
         <FlightPlan />
+        <Throttle />
     </div>
 </template>
 
@@ -14,6 +15,7 @@ import CircleLeft from './CircleLeft.vue';
 import CircleRight from './CircleRight.vue';
 import ReturnToHome from './ReturnToHome.vue';
 import FlightPlan from './FlightPlan.vue';
+import Throttle from './Throttle.vue';
 export default {
     components: {
         CircleLeft,
@@ -21,13 +23,14 @@ export default {
         ReturnToHome,
         Centering,
         FlightPlan,
+        Throttle,
     },
 };
 </script>
 
 <style lang="scss" scoped>
 .buttons {
-    grid-column: 1/3;
+    grid-column: 1/4;
     height: 50px;
     box-sizing: border-box;
     width: 100%;
@@ -35,6 +38,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     margin-top: auto;
+    padding-right: 13px;
 
     button {
         all: unset;

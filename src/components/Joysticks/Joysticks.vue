@@ -2,6 +2,7 @@
     <div class="joysticks">
         <Camera />
         <Pilot />
+        <Throttle />
         <Buttons />
     </div>
 </template>
@@ -10,11 +11,13 @@
 import Camera from './Camera.vue';
 import Pilot from './Pilot.vue';
 import Buttons from './Buttons/Buttons.vue';
+import Throttle from './Throttle.vue';
 export default {
     components: {
         Camera,
         Buttons,
         Pilot,
+        Throttle,
     },
 };
 </script>
@@ -27,6 +30,6 @@ export default {
     z-index: 1;
     transition: 0.2s all ease-in-out;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 140px 140px 40px;
 }
 </style>
