@@ -22,7 +22,7 @@ export default defineComponent({
         ...mapState({
             isEnabled: (state: any) =>
                 state.state.flyingState !== 0 &&
-                state.permission.canUseAutonomy,
+                state.permission.canPilotingRoll,
         }),
         isEnabledClass() {
             return this.isEnabled ? '' : 'disabled';

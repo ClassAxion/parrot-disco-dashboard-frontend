@@ -1,5 +1,5 @@
 <template>
-    <input type="range" class="slider" />
+    <input type="range" class="slider" disabled=""/>
     <!-- <div class="throttle">
     </div> -->
 </template>
