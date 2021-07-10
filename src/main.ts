@@ -5,10 +5,12 @@ import store from './store';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import SimplePeer from 'simple-peer';
-
+import { Store } from 'vuex';
 import Toast, { PluginOptions, POSITION } from 'vue-toastification';
-// Import the CSS or use your own!
 import 'vue-toastification/dist/index.css';
+
+import { Store as StoreInfo } from '@/interfaces/Store';
+import ParrotDiscoGlobalMap from './modules/ParrotDiscoGlobalMap';
 
 axios.defaults.baseURL = '/api/';
 
@@ -40,7 +42,11 @@ socket.on('disconnect', () => {
     window.location.href = '/';
 });
 
-app.use(store(socket, peer));
+const mainStore: Store<StoreInfo> = store(socket, peer);
+
+const globalMap: ParrotDiscoGlobalMap = new ParrotDiscoGlobalMap(mainStore);
+
+app.use(mainStore);
 app.use(router);
 
 app.use(Toast, options);

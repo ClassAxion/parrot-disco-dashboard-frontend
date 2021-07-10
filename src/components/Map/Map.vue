@@ -49,7 +49,7 @@ import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
 import { LMap, LTileLayer, LIcon, LMarker } from '@vue-leaflet/vue-leaflet';
-import { LatLng, latLng } from 'leaflet';
+import { LatLng, latLng, marker, icon } from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
 import geometry from 'leaflet-geometryutil';
@@ -72,6 +72,7 @@ declare module '@vue/runtime-core' {
         variableMap: any;
         discoAngle: number;
         discoDegress: number;
+        iconUrl: any;
     }
 }
 
@@ -93,6 +94,9 @@ export default defineComponent({
     },
     computed: {
         ...mapState({
+            flights: (state: any) => {
+                return state.flights;
+            },
             discoLocationForMarker: (state: any) => [
                 state.gps.latitude,
                 state.gps.longitude,
@@ -161,10 +165,99 @@ export default defineComponent({
             if (this.followDiscoLocation) return '#27ae60';
         },
     },
+    watch: {
+        flights: {
+            handler(flights) {
+                const discoIcon = icon({
+                    iconUrl: this.iconUrl,
+                    iconSize: [64, 64],
+                });
+
+                if (this.isMapLoaded) {
+                    const layers: string[] = Object.keys(
+                        this.mapObject._layers,
+                    );
+
+                    const flightIds: string[] = Object.keys(flights);
+
+                    const flightToLayer: { [key: string]: string } = {};
+
+                    for (const layerId of layers) {
+                        const layer = this.mapObject._layers[layerId];
+
+                        const isMarker: boolean =
+                            !!layer._icon && layer._icon.alt !== '';
+
+                        if (isMarker) {
+                            const markerId: string = layer._icon.alt;
+
+                            if (flightIds.includes(markerId)) {
+                                flightToLayer[markerId] = layerId;
+                            } else {
+                                this.mapObject.removeLayer(layer);
+                            }
+                        }
+                    }
+
+                    for (const flightId of flightIds) {
+                        const flight = flights[flightId];
+
+                        if (!flight.location) continue;
+
+                        const location = [
+                            flight.location.latitude,
+                            flight.location.longitude,
+                        ];
+
+                        if (!flightToLayer[flightId]) {
+                            marker(
+                                [
+                                    flight.location.latitude,
+                                    flight.location.longitude,
+                                ],
+                                {
+                                    icon: discoIcon,
+                                    alt: flightId,
+                                },
+                            ).addTo(this.mapObject);
+                        } else {
+                            const layerId = flightToLayer[flightId];
+
+                            this.mapObject._layers[layerId].setLatLng(location);
+
+                            this.mapObject._layers[layerId]._icon.style[
+                                'transform-origin'
+                            ] = '50% 50%';
+
+                            if (
+                                !this.mapObject._layers[
+                                    layerId
+                                ]._icon.style.transform.includes('rotate')
+                            ) {
+                                this.mapObject._layers[
+                                    layerId
+                                ]._icon.style.transform += ` rotate(${flight.angle}deg)`;
+                            } else {
+                                this.mapObject._layers[
+                                    layerId
+                                ]._icon.style.transform = this.mapObject._layers[
+                                    layerId
+                                ]._icon.style.transform.replace(
+                                    /rotate\(([0-9]+)deg\)/,
+                                    `rotate(${flight.angle}deg)`,
+                                );
+                            }
+                        }
+                    }
+                }
+            },
+            deep: true,
+        },
+    },
     methods: {
         setDiscoDegress(deg: number) {
             const icon: any = document.querySelector(
-                '.leaflet-marker-icon[src*=parrot]',
+                '.leaflet-marker-icon[src*=parrot][alt=""]',
             );
 
             if (icon) {
