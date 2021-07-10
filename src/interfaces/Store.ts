@@ -1,5 +1,6 @@
 import { Battery } from './Battery';
 import { Camera } from './Camera';
+import { GlobalMapFlight } from './GlobalMapFlight';
 import { GPS } from './GPS';
 import { Health } from './Health';
 import { Home } from './Home';
@@ -12,6 +13,7 @@ import { State } from './State';
 import { User } from './User';
 
 export interface Store {
+    flights: { [key: string]: GlobalMapFlight };
     isConnected: boolean;
     isGamePadActive: boolean;
     animationFrame: number;

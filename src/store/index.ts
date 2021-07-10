@@ -4,12 +4,14 @@ import { createStore, Store } from 'vuex';
 import { Store as StoreInfo } from '@/interfaces/Store';
 import { Instance as Peer } from 'simple-peer';
 import { useToast } from 'vue-toastification';
+import { PacketUpdate } from '@/modules/ParrotDiscoGlobalMap';
 
 export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
     const toast = useToast();
 
     const store: Store<StoreInfo> = createStore({
         state: {
+            flights: {},
             isConnected: false,
             isGamePadActive: false,
             animationFrame: 0,
@@ -104,6 +106,38 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
                 if (piloting.throttle !== undefined) {
                     state.piloting.throttle = piloting.throttle;
+                }
+            },
+            updateFlight(state: StoreInfo, data: PacketUpdate) {
+                const exists: boolean = !!state.flights[data.id];
+
+                if (!exists) {
+                    state.flights[data.id] = {
+                        ...data,
+                        updatedAt: Date.now(),
+                    };
+                } else {
+                    if (!!data.altitude)
+                        state.flights[data.id].altitude = data.altitude;
+
+                    if (!!data.angle) state.flights[data.id].angle = data.angle;
+
+                    if (!!data.location)
+                        state.flights[data.id].location = data.location;
+
+                    if (!!data.speed) state.flights[data.id].speed = data.speed;
+
+                    state.flights[data.id].updatedAt = Date.now();
+                }
+            },
+            removeExpiredFlights(state: StoreInfo) {
+                const ids: string[] = Object.keys(state.flights);
+                const timeoutMs: number = 30000;
+
+                for (const id of ids) {
+                    if (Date.now() - state.flights[id].updatedAt > timeoutMs) {
+                        delete state.flights[id];
+                    }
                 }
             },
         },
