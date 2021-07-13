@@ -168,12 +168,6 @@ export default defineComponent({
     watch: {
         flights: {
             handler(flights) {
-                const url = window.location.href;
-
-                const myId = (url.split('//flight').pop() || '0').slice(0, 1);
-
-                flights = flights.filter(flight => flight.id != myId);
-
                 const discoIcon = icon({
                     iconUrl: this.iconUrl,
                     iconSize: [64, 64],

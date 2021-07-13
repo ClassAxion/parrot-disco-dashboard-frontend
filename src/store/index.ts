@@ -109,6 +109,12 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 }
             },
             updateFlight(state: StoreInfo, data: PacketUpdate) {
+                const url = window.location.href;
+
+                const myId = (url.split('//flight').pop() || '0').slice(0, 1);
+
+                if (data.id == myId) return;
+
                 const exists: boolean = !!state.flights[data.id];
 
                 if (!exists) {
