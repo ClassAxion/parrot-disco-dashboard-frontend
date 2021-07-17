@@ -72,6 +72,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 isSuperUser: false,
                 canPilotingPitch: false,
                 canPilotingRoll: false,
+                canPilotingThrottle: false,
                 canMoveCamera: false,
                 canUseAutonomy: false,
             },
@@ -92,6 +93,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             },
         },
         mutations: {
+            setZeroThrottle(state: StoreInfo) {
+                state.piloting.throttle = 0;
+            },
             setPiloting(
                 state: StoreInfo,
                 piloting: { pitch?: number; roll?: number; throttle?: number },
@@ -153,6 +157,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 piloting: { pitch?: number; roll?: number; throttle?: number },
             ) {
                 commit('setPiloting', piloting);
+            },
+            setZeroThrottle({ commit }) {
+                commit('setZeroThrottle');
             },
         },
     });
@@ -265,6 +272,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 isSuperUser,
                 canPilotingPitch,
                 canPilotingRoll,
+                canPilotingThrottle,
                 canMoveCamera,
                 canUseAutonomy,
             } = packet.data;
@@ -279,6 +287,10 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             if (canPilotingRoll !== undefined) {
                 store.state.permission.canPilotingRoll = canPilotingRoll;
+            }
+
+            if (canPilotingThrottle !== undefined) {
+                store.state.permission.canPilotingThrottle = canPilotingThrottle;
             }
 
             if (canMoveCamera !== undefined) {

@@ -12,15 +12,11 @@
 </template>
 
 <script lang="ts">
-// TODO Delete unused code after testing
-
-import { Instance as Peer } from 'simple-peer';
 import { defineComponent } from 'vue';
 import { mapState, mapActions } from 'vuex';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
-        peer: Peer;
         x: number;
         y: number;
         speed: number;
@@ -32,7 +28,6 @@ declare module '@vue/runtime-core' {
 }
 
 export default defineComponent({
-    inject: ['peer'],
     data() {
         return {
             x: 0,
@@ -148,15 +143,6 @@ export default defineComponent({
             );
 
             this.updatePiloting({ roll, pitch });
-
-            /*
-            this.peer.send(
-                JSON.stringify({
-                    action: 'move',
-                    data: { pitch, roll },
-                }),
-            );
-            */
         },
         parseValue(value, min, max) {
             if (value < min) return min;

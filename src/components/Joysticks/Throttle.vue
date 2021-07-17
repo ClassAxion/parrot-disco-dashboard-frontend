@@ -1,8 +1,63 @@
 <template>
-    <input type="range" class="slider" disabled=""/>
-    <!-- <div class="throttle">
-    </div> -->
+    <input
+        type="range"
+        class="slider"
+        v-model="throttle"
+        min="-75"
+        max="75"
+        @change="updatePosition"
+        :disabled="!isThrottleEnabled"
+    />
+    <div class="throttle"></div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState, mapActions, mapMutations } from 'vuex';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        throttle: number;
+        setPiloting: Function;
+    }
+}
+
+export default defineComponent({
+    data() {
+        return {
+            throttle: 0,
+        };
+    },
+    computed: {
+        ...mapState({
+            isThrottleEnabled: (state: any) =>
+                state.permission.canPilotingThrottle,
+            stateThrottle: (state: any) => state.piloting.throttle,
+        }),
+    },
+    methods: {
+        ...mapActions({
+            updatePiloting: 'updatePiloting',
+        }),
+        updatePosition() {
+            if (!this.isThrottleEnabled) return;
+
+            let throttle = this.throttle;
+
+            if (throttle > -10 && throttle < 10) throttle = 0;
+
+            this.updatePiloting({ throttle: Number(throttle) });
+        },
+    },
+    watch: {
+        stateThrottle(value, previousValue) {
+            if (value === 0 && previousValue !== 0) {
+                this.throttle = 0;
+            }
+        },
+    },
+});
+</script>
 
 <style lang="scss" scoped>
 .slider {
