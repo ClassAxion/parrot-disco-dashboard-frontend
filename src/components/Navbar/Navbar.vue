@@ -13,6 +13,7 @@
         <div class="right">
             <Gamepad />
             <FlightTime />
+            <Heading />
             <Pitch />
             <Roll />
             <Health />
@@ -38,6 +39,7 @@ import FlightTime from './FlightTime.vue';
 import Speed from './Speed.vue';
 import Altitude from './Altitude.vue';
 import Distance from './Distance.vue';
+import Heading from './Heading.vue';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
@@ -59,6 +61,7 @@ export default defineComponent({
         Speed,
         Altitude,
         Distance,
+        Heading,
     },
     computed: {
         ...mapState({
