@@ -30,7 +30,7 @@ export default {
 
 <style lang="scss" scoped>
 .buttons {
-    grid-column: 1/4;
+    grid-column: 1/5;
     height: 50px;
     box-sizing: border-box;
     width: 100%;
