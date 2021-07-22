@@ -3,8 +3,8 @@
         type="range"
         class="slider"
         v-model="throttle"
-        min="-75"
-        max="75"
+        min="-100"
+        max="100"
         @change="updatePosition"
         :disabled="!isThrottleEnabled"
     />
