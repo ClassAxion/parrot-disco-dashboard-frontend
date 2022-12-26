@@ -4,6 +4,7 @@
         <CircleLeft />
         <CircleRight />
         <ReturnToHome />
+        <Tests />
         <FlightPlan />
         <Throttle />
     </div>
@@ -15,6 +16,7 @@ import CircleLeft from './CircleLeft.vue';
 import CircleRight from './CircleRight.vue';
 import ReturnToHome from './ReturnToHome.vue';
 import FlightPlan from './FlightPlan.vue';
+import Tests from './Tests.vue';
 import Throttle from './Throttle.vue';
 export default {
     components: {
@@ -22,6 +24,7 @@ export default {
         CircleRight,
         ReturnToHome,
         Centering,
+        Tests,
         FlightPlan,
         Throttle,
     },
