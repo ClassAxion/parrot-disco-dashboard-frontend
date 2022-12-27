@@ -68,7 +68,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .settings {
     margin: 0 1rem;
-    background: #3d3d3d;
     box-sizing: border-box;
     color: #ffffff;
     font-weight: 600;

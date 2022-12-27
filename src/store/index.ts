@@ -43,9 +43,10 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             health: {
                 isGoodToTakeOff: true,
                 magnetoCalibrationRequired: false,
+                pitotCalibrationRequired: true,
                 imuState: true,
                 barometerState: true,
-                ultrasoundState: true,
+                ultrasonicState: true,
                 gpsState: true,
                 magnetometerState: true,
                 verticalCameraState: true,
@@ -342,24 +343,39 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 store.state.camera.currentPanPosition = orientation.pan;
                 store.state.camera.currentTiltPosition = orientation.tilt;
             }
-        } else if (packet.action === 'check') {
+        } else if (packet.action === 'health') {
             const {
-                lastRTHStatus,
-                lastCalibrationStatus,
-                lastHardwareStatus,
+                magnetoCalibrationRequired,
+                pitotCalibrationRequired,
+                imuState,
+                barometerState,
+                ultrasonicState,
+                gpsState,
+                magnetometerState,
+                verticalCameraState,
             } = packet.data;
 
-            if (lastRTHStatus !== undefined && !lastRTHStatus) {
-                store.state.health.isGoodToTakeOff = false;
-            }
+            if (magnetoCalibrationRequired !== undefined)
+                store.state.health.magnetoCalibrationRequired = magnetoCalibrationRequired;
 
-            if (lastCalibrationStatus !== undefined && !lastCalibrationStatus) {
-                store.state.health.isGoodToTakeOff = false;
-            }
+            if (pitotCalibrationRequired !== undefined)
+                store.state.health.pitotCalibrationRequired = pitotCalibrationRequired;
 
-            if (lastHardwareStatus !== undefined && !lastHardwareStatus) {
-                store.state.health.isGoodToTakeOff = false;
-            }
+            if (imuState !== undefined) store.state.health.imuState = imuState;
+
+            if (barometerState !== undefined)
+                store.state.health.barometerState = barometerState;
+
+            if (ultrasonicState !== undefined)
+                store.state.health.ultrasonicState = ultrasonicState;
+
+            if (gpsState !== undefined) store.state.health.gpsState = gpsState;
+
+            if (magnetometerState !== undefined)
+                store.state.health.magnetometerState = magnetometerState;
+
+            if (verticalCameraState !== undefined)
+                store.state.health.verticalCameraState = verticalCameraState;
         } else if (packet.action === 'home') {
             const {
                 latitude,
