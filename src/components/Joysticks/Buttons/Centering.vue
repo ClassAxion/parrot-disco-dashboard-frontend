@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { Instance as Peer } from 'simple-peer';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
@@ -20,7 +21,7 @@ export default defineComponent({
     inject: ['peer'],
     computed: {
         ...mapState({
-            isEnabled: (state: any) => state.permission.canMoveCamera,
+            isEnabled: state => (state as Store).permission.canMoveCamera,
         }),
         isEnabledClass() {
             return this.isEnabled ? '' : 'disabled';

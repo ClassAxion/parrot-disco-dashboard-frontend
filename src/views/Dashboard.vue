@@ -16,6 +16,7 @@ import Joysticks from '@/components/Joysticks/Joysticks.vue';
 import Stream from '@/components/Stream/Stream.vue';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
+import { Store } from '@/interfaces/Store';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {}
@@ -31,7 +32,7 @@ export default defineComponent({
     },
     computed: {
         ...mapState({
-            isConnected: (state: any) => state.isConnected,
+            isConnected: state => (state as Store).isConnected,
         }),
     },
     mounted() {

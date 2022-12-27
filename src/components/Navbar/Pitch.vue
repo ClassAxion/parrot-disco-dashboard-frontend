@@ -9,6 +9,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
@@ -21,8 +22,8 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     computed: {
         ...mapState({
-            pitchAngle: (state: any) => {
-                return state.orientation.pitch;
+            pitchAngle: state => {
+                return (state as Store).orientation.pitch;
             },
         }),
         pitchDegress() {

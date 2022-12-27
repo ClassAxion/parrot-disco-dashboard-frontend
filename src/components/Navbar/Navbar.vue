@@ -40,10 +40,12 @@ import Speed from './Speed.vue';
 import Altitude from './Altitude.vue';
 import Distance from './Distance.vue';
 import Heading from './Heading.vue';
+import { Store } from '@/interfaces/Store';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         flyingState: number;
+        flyingStateText: string;
     }
 }
 
@@ -65,7 +67,7 @@ export default defineComponent({
     },
     computed: {
         ...mapState({
-            flyingState: (state: any) => state.state.flyingState,
+            flyingState: state => (state as Store).state.flyingState,
         }),
         flyingStateText() {
             switch (this.flyingState) {

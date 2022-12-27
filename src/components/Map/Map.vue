@@ -53,6 +53,7 @@ import { LatLng, latLng, marker, icon } from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
 import geometry from 'leaflet-geometryutil';
+import { Store } from '@/interfaces/Store';
 
 const Marker = require('@/assets/img/parrot.png');
 const Arrow = require('@/assets/img/arrow-bottom.svg');
@@ -67,12 +68,16 @@ declare module '@vue/runtime-core' {
         isDiscoLocationAvailable: boolean;
         mapObject: any;
         isMapLoaded: boolean;
-        setDiscoDegressTick: any;
-        setDiscoDegress: any;
-        variableMap: any;
+        setDiscoDegressTick: Function;
+        setDiscoDegress: Function;
+        variableMap: Function;
         discoAngle: number;
         discoDegress: number;
         iconUrl: any;
+    }
+
+    interface State {
+        count: number;
     }
 }
 
@@ -94,56 +99,55 @@ export default defineComponent({
     },
     computed: {
         ...mapState({
-            flights: (state: any) => {
-                return state.flights;
+            flights: state => {
+                return (state as Store).flights;
             },
-            discoLocationForMarker: (state: any) => [
-                state.gps.latitude,
-                state.gps.longitude,
+            discoLocationForMarker: state => [
+                (state as Store).gps.latitude,
+                (state as Store).gps.longitude,
             ],
-            discoLocation: (state: any) => ({
-                latitude: state.gps.latitude,
-                longitude: state.gps.longitude,
+            discoLocation: state => ({
+                latitude: (state as Store).gps.latitude,
+                longitude: (state as Store).gps.longitude,
             }),
-            homeLocationForMarker: (state: any) => [
-                state.home.latitude,
-                state.home.longitude,
+            homeLocationForMarker: state => [
+                (state as Store).home.latitude,
+                (state as Store).home.longitude,
             ],
-            homeLocation: (state: any) => ({
-                latitude: state.home.latitude,
-                longitude: state.home.longitude,
+            homeLocation: state => ({
+                latitude: (state as Store).home.latitude,
+                longitude: (state as Store).home.longitude,
             }),
-            discoAngle: (state: any) => state.orientation.yaw,
-            discoLocationLatitudeText() {
-                return this.discoLocation.latitude.toFixed(6);
-            },
-            discoLocationLongitudeText() {
-                return this.discoLocation.longitude.toFixed(6);
-            },
-            isDiscoLocationAvailable() {
-                return (
-                    !!this.discoLocation.latitude &&
-                    !!this.discoLocation.longitude
-                );
-            },
-            homeAngle() {
-                if (!this.isDiscoLocationAvailable) return 0;
-
-                const discoLatLng: LatLng = latLng(
-                    this.discoLocation.latitude,
-                    this.discoLocation.longitude,
-                );
-
-                const homeLatLng: LatLng = latLng(
-                    this.homeLocation.latitude,
-                    this.homeLocation.longitude,
-                );
-
-                if (!this.mapObject) return 0;
-
-                return geometry.angle(this.mapObject, homeLatLng, discoLatLng);
-            },
+            discoAngle: state => (state as Store).orientation.yaw,
         }),
+        discoLocationLatitudeText() {
+            return this.discoLocation.latitude.toFixed(6);
+        },
+        discoLocationLongitudeText() {
+            return this.discoLocation.longitude.toFixed(6);
+        },
+        isDiscoLocationAvailable() {
+            return (
+                !!this.discoLocation.latitude && !!this.discoLocation.longitude
+            );
+        },
+        homeAngle() {
+            if (!this.isDiscoLocationAvailable) return 0;
+
+            const discoLatLng: LatLng = latLng(
+                this.discoLocation.latitude,
+                this.discoLocation.longitude,
+            );
+
+            const homeLatLng: LatLng = latLng(
+                this.homeLocation.latitude,
+                this.homeLocation.longitude,
+            );
+
+            if (!this.mapObject) return 0;
+
+            return geometry.angle(this.mapObject, homeLatLng, discoLatLng);
+        },
         mapLocation() {
             return this.followDiscoLocation && this.isDiscoLocationAvailable
                 ? [this.discoLocation.latitude, this.discoLocation.longitude]

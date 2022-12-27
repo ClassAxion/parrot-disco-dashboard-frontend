@@ -229,6 +229,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                     case 'success':
                         toast.success(message);
                         break;
+                    default:
                     case 'info':
                         toast.info(message);
                         break;
@@ -557,8 +558,8 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
         store.state.animationFrame = requestAnimationFrame(run);
     };
 
-    window.addEventListener('gamepadconnected', (e: any) => {
-        const o: any = navigator.getGamepads()[e.gamepad.index];
+    window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
+        const o: Gamepad | null = navigator.getGamepads()[e.gamepad.index];
 
         if (!o) return;
 

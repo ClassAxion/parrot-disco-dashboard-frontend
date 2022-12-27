@@ -21,7 +21,6 @@ export default defineComponent({
             this.socket.disconnect();
             this.peer.destroy();
 
-            //this.$router.push('/');
             window.location.href = '/';
         },
     },

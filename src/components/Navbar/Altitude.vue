@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
@@ -16,12 +17,12 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     computed: {
         ...mapState({
-            altitude: (state: any) => state.orientation.altitude || 0,
-            gpsAltitude: (state: any) => state.gps.altitude,
-            altitudeCalculated() {
-                return this.altitude.toFixed(0);
-            },
+            altitude: state => (state as Store).orientation.altitude || 0,
+            gpsAltitude: state => (state as Store).gps.altitude,
         }),
+        altitudeCalculated() {
+            return this.altitude.toFixed(0);
+        },
     },
 });
 </script>

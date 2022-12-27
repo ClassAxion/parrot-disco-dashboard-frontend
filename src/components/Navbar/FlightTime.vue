@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
@@ -15,8 +16,8 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     computed: {
         ...mapState({
-            flyingTime: (state: any) => {
-                let seconds: number = state.state.flyingTime / 1000;
+            flyingTime: state => {
+                let seconds: number = (state as Store).state.flyingTime / 1000;
 
                 const hours: number = Math.floor(seconds / 60 / 60);
 

@@ -3,6 +3,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { Instance as Peer } from 'simple-peer';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
@@ -18,7 +19,8 @@ export default defineComponent({
     inject: ['peer'],
     computed: {
         ...mapState({
-            isEnabled: (state: any) => [2, 3].includes(state.state.flyingState),
+            isEnabled: state =>
+                [2, 3].includes((state as Store).state.flyingState),
         }),
         isEnabledClass() {
             return this.isEnabled ? '' : 'disabled';

@@ -12,6 +12,7 @@
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 import { latLng, LatLng } from 'leaflet';
+import { Store } from '@/interfaces/Store';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
@@ -24,35 +25,32 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     computed: {
         ...mapState({
-            discoLocation: (state: any) => ({
-                latitude: state.gps.latitude,
-                longitude: state.gps.longitude,
+            discoLocation: state => ({
+                latitude: (state as Store).gps.latitude,
+                longitude: (state as Store).gps.longitude,
             }),
-            homeLocation: (state: any) => ({
-                latitude: state.home.latitude,
-                longitude: state.home.longitude,
+            homeLocation: state => ({
+                latitude: (state as Store).home.latitude,
+                longitude: (state as Store).home.longitude,
             }),
-            distance() {
-                if (
-                    !this.discoLocation.latitude ||
-                    !this.discoLocation.longitude
-                ) {
-                    return 0;
-                }
-
-                const discoLatLng: LatLng = latLng(
-                    this.discoLocation.latitude,
-                    this.discoLocation.longitude,
-                );
-
-                const homeLatLng: LatLng = latLng(
-                    this.homeLocation.latitude,
-                    this.homeLocation.longitude,
-                );
-
-                return homeLatLng.distanceTo(discoLatLng);
-            },
         }),
+        distance() {
+            if (!this.discoLocation.latitude || !this.discoLocation.longitude) {
+                return 0;
+            }
+
+            const discoLatLng: LatLng = latLng(
+                this.discoLocation.latitude,
+                this.discoLocation.longitude,
+            );
+
+            const homeLatLng: LatLng = latLng(
+                this.homeLocation.latitude,
+                this.homeLocation.longitude,
+            );
+
+            return homeLatLng.distanceTo(discoLatLng);
+        },
         distanceCalculated() {
             const value: number = this.distance;
 

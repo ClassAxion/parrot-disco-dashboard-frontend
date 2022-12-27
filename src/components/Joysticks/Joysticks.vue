@@ -8,7 +8,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import Camera from './Camera.vue';
 import Pilot from './Pilot.vue';
 import Buttons from './Buttons/Buttons.vue';

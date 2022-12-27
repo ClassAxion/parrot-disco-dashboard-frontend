@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { Instance as Peer } from 'simple-peer';
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
@@ -31,7 +31,7 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     computed: {
         ...mapState({
-            isActive: (state: any) => state.isGamePadActive,
+            isActive: state => (state as Store).isGamePadActive,
         }),
         color() {
             return this.isActive ? '#27ae60' : '#ffffff';

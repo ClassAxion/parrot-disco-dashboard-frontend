@@ -12,6 +12,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
@@ -19,6 +20,7 @@ declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         throttle: number;
         setPiloting: Function;
+        isThrottleEnabled: boolean;
     }
 }
 
@@ -30,9 +32,9 @@ export default defineComponent({
     },
     computed: {
         ...mapState({
-            isThrottleEnabled: (state: any) =>
-                state.permission.canPilotingThrottle,
-            stateThrottle: (state: any) => state.piloting.throttle,
+            isThrottleEnabled: state =>
+                (state as Store).permission.canPilotingThrottle,
+            stateThrottle: state => (state as Store).piloting.throttle,
         }),
     },
     methods: {
@@ -67,6 +69,7 @@ export default defineComponent({
     transform-origin: 64px 64px;
     transform: rotate(-90deg);
     -webkit-appearance: none;
+    appearance: none;
     border-radius: 3px;
     margin-left: 7px;
     opacity: 0.2;

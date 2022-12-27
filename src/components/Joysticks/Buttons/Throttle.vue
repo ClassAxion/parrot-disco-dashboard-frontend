@@ -8,21 +8,22 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState, mapActions } from 'vuex';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         setPiloting: Function;
-        isThrottleEnabled: number;
+        isThrottleEnabled: boolean;
     }
 }
 
 export default defineComponent({
     computed: {
         ...mapState({
-            isThrottleEnabled: (state: any) =>
-                state.permission.canPilotingThrottle,
+            isThrottleEnabled: state =>
+                (state as Store).permission.canPilotingThrottle,
         }),
         isDisabledClass() {
             return this.isThrottleEnabled ? 'disabled' : '';

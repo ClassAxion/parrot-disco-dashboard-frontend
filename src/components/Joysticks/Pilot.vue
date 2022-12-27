@@ -12,16 +12,18 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState, mapActions } from 'vuex';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
+        $el: any;
         x: number;
         y: number;
         speed: number;
         isMouseDown: boolean;
-        timeout: any;
+        timeout: NodeJS.Timeout;
         alreadySentZero: boolean;
         setPiloting: Function;
     }
@@ -34,15 +36,16 @@ export default defineComponent({
             y: 0,
             speed: 0,
             isMouseDown: false,
-            timeout: null,
+            timeout: setTimeout(function() {}, 0),
         };
     },
     computed: {
         ...mapState({
-            isPitchEnabled: (state: any) => state.permission.canPilotingPitch,
-            isRollEnabled: (state: any) => state.permission.canPilotingRoll,
-            tiltMaxSpeed: (state: any) => state.camera.maxTiltSpeed,
-            panMaxSpeed: (state: any) => state.camera.maxPanSpeed,
+            isPitchEnabled: state =>
+                (state as Store).permission.canPilotingPitch,
+            isRollEnabled: state => (state as Store).permission.canPilotingRoll,
+            tiltMaxSpeed: state => (state as Store).camera.maxTiltSpeed,
+            panMaxSpeed: state => (state as Store).camera.maxPanSpeed,
         }),
         style() {
             return {
@@ -60,7 +63,11 @@ export default defineComponent({
             this.isMouseDown = true;
             clearTimeout(this.timeout);
         },
-        handleTouch({ touches: [touch] }) {
+        handleTouch(payload: TouchEvent) {
+            if (payload.touches.length < 1) return;
+
+            const touch = payload.touches[0];
+
             const { clientX, clientY } = touch;
             const { offsetLeft, offsetTop } = this.$el;
             const x = Math.round(clientX - offsetLeft - 64);

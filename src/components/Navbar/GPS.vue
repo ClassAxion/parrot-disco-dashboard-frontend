@@ -1,11 +1,12 @@
 <template>
-    <div class="gps" :style="{ 'background-color': color }">
+    <div class="gps" :style="{ background: color }">
         <span>{{ availableSatellites }}</span>
         <img src="./../../assets/img/glob.svg" alt="glob" />
     </div>
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
@@ -18,9 +19,9 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     computed: {
         ...mapState({
-            availableSatellites: (state: any) =>
-                state.gps.availableSatellites || 0,
-            isFixed: (state: any) => state.gps.isFixed,
+            availableSatellites: state =>
+                (state as Store).gps.availableSatellites || 0,
+            isFixed: state => (state as Store).gps.isFixed,
         }),
         color() {
             return this.isFixed ? '#27ae60' : '#e74c3c';

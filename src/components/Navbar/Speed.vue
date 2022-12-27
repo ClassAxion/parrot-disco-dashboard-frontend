@@ -8,6 +8,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
@@ -20,7 +21,7 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     computed: {
         ...mapState({
-            speed: (state: any) => state.orientation.speed,
+            speed: state => (state as Store).orientation.speed,
         }),
         speedUnit: () => 'km/h',
         speedMs() {

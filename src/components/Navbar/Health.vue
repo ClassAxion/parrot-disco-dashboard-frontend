@@ -17,6 +17,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
@@ -29,11 +30,11 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     computed: {
         ...mapState({
-            isGoodToTakeOff: (state: any) => state.health.isGoodToTakeOff,
-            color() {
-                return this.isGoodToTakeOff ? '#27ae60' : '#e74c3c';
-            },
+            isGoodToTakeOff: state => (state as Store).health.isGoodToTakeOff,
         }),
+        color() {
+            return this.isGoodToTakeOff ? '#27ae60' : '#e74c3c';
+        },
     },
 });
 </script>

@@ -6,21 +6,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { mapState } from 'vuex';
 
 declare module '@vue/runtime-core' {
-    interface ComponentCustomProperties {
-        stream: any;
-    }
+    interface ComponentCustomProperties {}
 }
 
 const Image = require('@/assets/img/background.png');
 
 export default defineComponent({
     computed: {
-        ...mapState({
-            stream: (state: any) => state.stream,
-        }),
         setImage() {
             return Image;
         },

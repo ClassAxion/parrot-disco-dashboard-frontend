@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts">
+import { Store } from '@/interfaces/Store';
 import { Instance as Peer } from 'simple-peer';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
@@ -25,7 +26,7 @@ declare module '@vue/runtime-core' {
         y: number;
         speed: number;
         isMouseDown: boolean;
-        timeout: any;
+        timeout: NodeJS.Timeout;
         alreadySentZero: boolean;
     }
 }
@@ -38,15 +39,15 @@ export default defineComponent({
             y: 0,
             speed: 0,
             isMouseDown: false,
-            timeout: null,
+            timeout: setTimeout(function() {}, 0),
             alreadySentZero: false,
         };
     },
     computed: {
         ...mapState({
-            isEnabled: (state: any) => state.permission.canMoveCamera,
-            tiltMaxSpeed: (state: any) => state.camera.maxTiltSpeed,
-            panMaxSpeed: (state: any) => state.camera.maxPanSpeed,
+            isEnabled: state => (state as Store).permission.canMoveCamera,
+            tiltMaxSpeed: state => (state as Store).camera.maxTiltSpeed,
+            panMaxSpeed: state => (state as Store).camera.maxPanSpeed,
         }),
         style() {
             return {
@@ -61,7 +62,11 @@ export default defineComponent({
             this.isMouseDown = true;
             clearTimeout(this.timeout);
         },
-        handleTouch({ touches: [touch] }) {
+        handleTouch(payload: TouchEvent) {
+            if (payload.touches.length < 1) return;
+
+            const touch = payload.touches[0];
+
             const { clientX, clientY } = touch;
             const { offsetLeft, offsetTop } = this.$el;
             const x = Math.round(clientX - offsetLeft - 64);
