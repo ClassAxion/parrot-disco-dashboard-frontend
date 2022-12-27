@@ -4,7 +4,7 @@
 
 <style lang="scss">
 #app {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Space Mono', monospace;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
@@ -27,7 +27,7 @@ html {
     height: 50px;
     border-radius: 5px;
     text-align: center;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Space Mono', monospace;
     font-weight: 600;
     color: white;
     box-sizing: border-box;
@@ -42,7 +42,7 @@ html {
     height: 50px;
     border-radius: 5px;
     text-align: center;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Space Mono', monospace;
     font-weight: 600;
     color: white;
     box-sizing: border-box;
