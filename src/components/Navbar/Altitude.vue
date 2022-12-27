@@ -11,7 +11,9 @@ import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
 declare module '@vue/runtime-core' {
-    interface ComponentCustomProperties {}
+    interface ComponentCustomProperties {
+        altitude: number;
+    }
 }
 
 export default defineComponent({

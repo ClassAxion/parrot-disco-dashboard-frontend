@@ -13,7 +13,9 @@ import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 
 declare module '@vue/runtime-core' {
-    interface ComponentCustomProperties {}
+    interface ComponentCustomProperties {
+        percent: number;
+    }
 }
 
 export default defineComponent({

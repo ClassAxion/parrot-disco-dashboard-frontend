@@ -558,7 +558,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
         store.state.animationFrame = requestAnimationFrame(run);
     };
 
-    window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
+    window.addEventListener('gamepadconnected', (ev: Event) => {
+        const e = ev as GamepadEvent;
+
         const o: Gamepad | null = navigator.getGamepads()[e.gamepad.index];
 
         if (!o) return;

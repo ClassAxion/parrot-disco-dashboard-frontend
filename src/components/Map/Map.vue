@@ -68,9 +68,9 @@ declare module '@vue/runtime-core' {
         isDiscoLocationAvailable: boolean;
         mapObject: any;
         isMapLoaded: boolean;
-        setDiscoDegressTick: Function;
-        setDiscoDegress: Function;
-        variableMap: Function;
+        setDiscoDegressTick: any;
+        setDiscoDegress: any;
+        variableMap: any;
         discoAngle: number;
         discoDegress: number;
         iconUrl: any;
