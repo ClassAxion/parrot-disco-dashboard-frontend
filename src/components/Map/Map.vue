@@ -5,6 +5,14 @@
             {{ discoLocationLatitudeText }} Lng:
             {{ discoLocationLongitudeText }}
         </p>
+        <p
+            class="coordinate"
+            v-if="isHomeLocationAvailable"
+            :title="'Chosen Home: ' + homeTypeChosen"
+        >
+            Lat: {{ homeLocationLatitudeText }} Lng:
+            {{ homeLocationLongitudeText }}
+        </p>
         <l-map
             v-model:zoom="zoom"
             :center="mapLocation"
@@ -25,7 +33,11 @@
                 <l-icon :icon-url="iconUrl" :icon-size="iconSize" />
             </l-marker>
 
-            <l-marker :lat-lng="homeLocationForMarker"> </l-marker>
+            <l-marker
+                v-if="isHomeLocationAvailable"
+                :lat-lng="homeLocationForMarker"
+            >
+            </l-marker>
         </l-map>
         <div class="locateHome" v-if="isDiscoLocationAvailable">
             <img
@@ -119,6 +131,7 @@ export default defineComponent({
                 longitude: (state as Store).home.longitude,
             }),
             discoAngle: state => (state as Store).orientation.yaw,
+            homeTypeChosen: state => (state as Store).home.typeChosen,
         }),
         discoLocationLatitudeText() {
             return this.discoLocation.latitude.toFixed(6);
@@ -126,9 +139,20 @@ export default defineComponent({
         discoLocationLongitudeText() {
             return this.discoLocation.longitude.toFixed(6);
         },
+        homeLocationLatitudeText() {
+            return this.homeLocation.latitude.toFixed(6);
+        },
+        homeLocationLongitudeText() {
+            return this.homeLocation.longitude.toFixed(6);
+        },
         isDiscoLocationAvailable() {
             return (
                 !!this.discoLocation.latitude && !!this.discoLocation.longitude
+            );
+        },
+        isHomeLocationAvailable() {
+            return (
+                !!this.homeLocation.latitude && !!this.homeLocation.longitude
             );
         },
         homeAngle() {

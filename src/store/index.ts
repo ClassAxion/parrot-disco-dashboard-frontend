@@ -52,10 +52,11 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 motorState: true,
             },
             home: {
-                latitude: 53.34937,
-                longitude: 17.64097,
+                latitude: 0,
+                longitude: 0,
                 altitude: 0,
-                isUsing: false,
+                typeWanted: 'UNKNOWN',
+                typeChosen: 'UNKNOWN',
             },
             network: {
                 latency: 0,
@@ -83,7 +84,6 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             },
             rth: {
                 delay: 0,
-                homeType: '',
             },
             state: {
                 flyingState: 0,
@@ -345,16 +345,11 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
         } else if (packet.action === 'check') {
             const {
                 lastRTHStatus,
-                lastHomeTypeStatus,
                 lastCalibrationStatus,
                 lastHardwareStatus,
             } = packet.data;
 
             if (lastRTHStatus !== undefined && !lastRTHStatus) {
-                store.state.health.isGoodToTakeOff = false;
-            }
-
-            if (lastHomeTypeStatus !== undefined && !lastHomeTypeStatus) {
                 store.state.health.isGoodToTakeOff = false;
             }
 
@@ -364,6 +359,34 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             if (lastHardwareStatus !== undefined && !lastHardwareStatus) {
                 store.state.health.isGoodToTakeOff = false;
+            }
+        } else if (packet.action === 'home') {
+            const {
+                latitude,
+                longitude,
+                altitude,
+                typeWanted,
+                typeChosen,
+            } = packet.data;
+
+            if (latitude !== undefined) {
+                store.state.home.latitude = latitude;
+            }
+
+            if (longitude !== undefined) {
+                store.state.home.longitude = longitude;
+            }
+
+            if (altitude !== undefined) {
+                store.state.home.altitude = altitude;
+            }
+
+            if (typeWanted !== undefined) {
+                store.state.home.typeWanted = typeWanted;
+            }
+
+            if (typeChosen !== undefined) {
+                store.state.home.typeChosen = typeChosen;
             }
         }
     });

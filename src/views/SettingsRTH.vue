@@ -2,15 +2,24 @@
     <div class="settings">
         <Background />
         <form>
-            <h1>Settings</h1>
+            <h1>Return to home settings</h1>
             <router-link to="/dashboard" class="back"
                 >Back to flight</router-link
             >
 
             <div class="inputWrapper">
                 <p class="title">Return to home type</p>
-                <div class="select" @click="rth.showValues = !rth.showValues">
-                    <span>{{ rth.value || 'UNKNOWN' }}</span>
+                <div
+                    class="select"
+                    @click="rth.showValues = !rth.showValues"
+                    :style="{ color: setColor }"
+                    :title="
+                        homeTypeWanted !== homeTypeChosen
+                            ? 'Wanted home not chosen, you should probably submit pilot location'
+                            : 'Wanted home chosen'
+                    "
+                >
+                    <span>{{ homeTypeWanted || 'UNKNOWN' }}</span>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -27,7 +36,7 @@
                     <ul class="values" v-if="rth.showValues">
                         <li
                             v-for="value in availableRTHValues"
-                            @click="setRTH(value)"
+                            @click="setHomeTypeWanted(value)"
                             :key="value"
                         >
                             {{ value }}
@@ -36,24 +45,38 @@
                 </div>
             </div>
 
-            <div v-if="rth.value == 'PILOT'">
+            <div v-if="homeTypeWanted == 'PILOT'">
                 <div class="inputWrapper">
                     <p class="title">Pilot latitude</p>
-                    <input type="text" placeholder="53.34925" />
+                    <input
+                        type="text"
+                        placeholder="53.34925"
+                        v-model="home.latitude"
+                    />
                 </div>
 
                 <div class="inputWrapper">
                     <p class="title">Pilot longitude</p>
-                    <input type="text" placeholder="17.64046" />
+                    <input
+                        type="text"
+                        placeholder="17.64046"
+                        v-model="home.longitude"
+                    />
                 </div>
 
                 <div class="inputWrapper">
                     <p class="title">Pilot altitude <small>[meters]</small></p>
-                    <input type="text" placeholder="167" />
+                    <input
+                        type="text"
+                        placeholder="167"
+                        v-model="home.altitude"
+                    />
                 </div>
-            </div>
 
-            <button type="button" class="save">Submit settings</button>
+                <button type="button" class="save" @click="submitPilotLocation">
+                    Submit pilot location
+                </button>
+            </div>
 
             <p class="poland">Made with <span>❤</span> in Poland</p>
         </form>
@@ -63,19 +86,31 @@
 
 <script lang="ts">
 import Background from '@/components/Background/Background.vue';
+import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
+import { mapActions, mapState } from 'vuex';
+import { Instance as Peer } from 'simple-peer';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
+        peer: Peer;
         rth: {
             values: string[];
             value: string;
             showValues: boolean;
         };
+        home: {
+            latitude: number;
+            longitude: number;
+            altitude: number;
+        };
+        homeTypeChosen: string;
+        homeTypeWanted: string;
     }
 }
 
 export default defineComponent({
+    inject: ['peer'],
     components: {
         Background,
     },
@@ -83,20 +118,71 @@ export default defineComponent({
         return {
             rth: {
                 values: ['TAKEOFF', 'PILOT'],
-                value: 'UNKNOWN',
                 showValues: false,
+            },
+            home: {
+                latitude: 0,
+                longitude: 0,
+                altitude: 0,
             },
         };
     },
     computed: {
+        ...mapState({
+            homeTypeWanted: state => (state as Store).home.typeWanted,
+            homeTypeChosen: state => (state as Store).home.typeChosen,
+            homeLocation: state => ({
+                latitude: (state as Store).home.latitude,
+                longitude: (state as Store).home.longitude,
+                altitude: (state as Store).home.altitude,
+            }),
+        }),
         availableRTHValues() {
             return this.rth.values;
         },
+        setColor() {
+            return this.homeTypeChosen !== this.homeTypeWanted
+                ? 'red'
+                : 'lightgreen';
+        },
     },
     methods: {
-        setRTH(value: string) {
-            this.rth.value = value;
+        ...mapActions({}),
+        setHomeTypeWanted(value: string) {
+            this.peer.send(
+                JSON.stringify({
+                    action: 'home',
+                    data: {
+                        typeWanted: value,
+                    },
+                }),
+            );
         },
+        submitPilotLocation() {
+            if (
+                this.home.latitude &&
+                this.home.longitude &&
+                this.home.altitude
+            ) {
+                this.peer.send(
+                    JSON.stringify({
+                        action: 'home',
+                        data: {
+                            latitude: this.home.latitude,
+                            longitude: this.home.longitude,
+                            altitude: this.home.altitude,
+                        },
+                    }),
+                );
+            }
+        },
+    },
+    created() {
+        if (!!this.homeLocation.latitude && !!this.homeLocation.longitude) {
+            this.home.latitude = this.homeLocation.latitude;
+            this.home.longitude = this.homeLocation.longitude;
+            this.home.altitude = this.homeLocation.altitude;
+        }
     },
 });
 </script>
