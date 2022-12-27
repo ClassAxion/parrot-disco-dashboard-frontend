@@ -52,6 +52,12 @@
                         type="text"
                         placeholder="53.34925"
                         v-model="home.latitude"
+                        :style="{
+                            color:
+                                wantedHomeLocation.latitude !== home.latitude
+                                    ? 'red'
+                                    : 'green',
+                        }"
                     />
                 </div>
 
@@ -61,6 +67,12 @@
                         type="text"
                         placeholder="17.64046"
                         v-model="home.longitude"
+                        :style="{
+                            color:
+                                wantedHomeLocation.longitude !== home.longitude
+                                    ? 'red'
+                                    : 'green',
+                        }"
                     />
                 </div>
 
@@ -75,6 +87,12 @@
 
                 <button type="button" class="save" @click="submitPilotLocation">
                     Submit pilot location
+                </button>
+
+                <br />
+
+                <button type="button" class="save" @click="refresh">
+                    Refresh pilot location
                 </button>
             </div>
 
@@ -136,6 +154,10 @@ export default defineComponent({
                 longitude: (state as Store).home.longitude,
                 altitude: (state as Store).home.altitude,
             }),
+            wantedHomeLocation: state => ({
+                latitude: (state as Store).home.latitudeWanted,
+                longitude: (state as Store).home.longitudeWanted,
+            }),
         }),
         availableRTHValues() {
             return this.rth.values;
@@ -143,11 +165,13 @@ export default defineComponent({
         setColor() {
             return this.homeTypeChosen !== this.homeTypeWanted
                 ? 'red'
-                : 'lightgreen';
+                : 'green';
         },
     },
     methods: {
-        ...mapActions({}),
+        ...mapActions({
+            updateWantedHome: 'updateWantedHome',
+        }),
         setHomeTypeWanted(value: string) {
             this.peer.send(
                 JSON.stringify({
@@ -174,15 +198,23 @@ export default defineComponent({
                         },
                     }),
                 );
+
+                this.updateWantedHome({
+                    latitude: this.home.latitude,
+                    longitude: this.home.longitude,
+                });
+            }
+        },
+        refresh() {
+            if (!!this.homeLocation.latitude && !!this.homeLocation.longitude) {
+                this.home.latitude = this.homeLocation.latitude;
+                this.home.longitude = this.homeLocation.longitude;
+                this.home.altitude = this.homeLocation.altitude;
             }
         },
     },
     created() {
-        if (!!this.homeLocation.latitude && !!this.homeLocation.longitude) {
-            this.home.latitude = this.homeLocation.latitude;
-            this.home.longitude = this.homeLocation.longitude;
-            this.home.altitude = this.homeLocation.altitude;
-        }
+        this.refresh();
     },
 });
 </script>

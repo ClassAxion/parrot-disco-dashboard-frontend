@@ -55,6 +55,8 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             home: {
                 latitude: 0,
                 longitude: 0,
+                latitudeWanted: 0,
+                longitudeWanted: 0,
                 altitude: 0,
                 typeWanted: 'UNKNOWN',
                 typeChosen: 'UNKNOWN',
@@ -113,6 +115,13 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                     state.piloting.throttle = piloting.throttle;
                 }
             },
+            updateWantedHome(
+                state: StoreInfo,
+                data: { latitude: number; longitude: number },
+            ) {
+                state.home.latitudeWanted = data.latitude;
+                state.home.longitudeWanted = data.longitude;
+            },
             updateFlight(state: StoreInfo, data: PacketUpdate) {
                 const url = window.location.href;
 
@@ -158,6 +167,12 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 piloting: { pitch?: number; roll?: number; throttle?: number },
             ) {
                 commit('setPiloting', piloting);
+            },
+            updateWantedHome(
+                { commit },
+                data: { latitude: number; longitude: number },
+            ) {
+                commit('updateWantedHome', data);
             },
             setZeroThrottle({ commit }) {
                 commit('setZeroThrottle');
