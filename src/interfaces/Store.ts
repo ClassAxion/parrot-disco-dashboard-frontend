@@ -12,6 +12,7 @@ import { RTH } from './store/RTH';
 import { State } from './store/State';
 import { Stats } from './store/Stats';
 import { User } from './store/User';
+import { Geofence } from './store/Geofence';
 
 export interface Store {
     flights: { [key: string]: GlobalMapFlight };
@@ -32,4 +33,5 @@ export interface Store {
     state: State;
     user: User;
     stats: Stats;
+    geofence: Geofence;
 }

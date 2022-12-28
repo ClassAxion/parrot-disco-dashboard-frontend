@@ -100,6 +100,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 massStorageSize: 0,
                 massStorageUsedSize: 0,
             },
+            geofence: {
+                isEnabled: false,
+            },
         },
         mutations: {
             setZeroThrottle(state: StoreInfo) {
@@ -448,6 +451,29 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             if (massStorageUsedSize !== undefined) {
                 store.state.stats.massStorageUsedSize = massStorageUsedSize;
             }
+        } else if (packet.action === 'geofence') {
+            const {
+                maxAltitude,
+                minAltitude,
+                maxDistance,
+                circlingAltitude,
+                isEnabled,
+            } = packet.data;
+
+            if (maxAltitude !== undefined)
+                store.state.geofence.maxAltitude = maxAltitude;
+
+            if (minAltitude !== undefined)
+                store.state.geofence.minAltitude = minAltitude;
+
+            if (maxDistance !== undefined)
+                store.state.geofence.maxDistance = maxDistance;
+
+            if (circlingAltitude !== undefined)
+                store.state.geofence.circlingAltitude = circlingAltitude;
+
+            if (isEnabled !== undefined)
+                store.state.geofence.isEnabled = isEnabled;
         }
     });
 
