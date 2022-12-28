@@ -94,6 +94,13 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 isDiscoConnected: false,
                 flyingTime: 0,
             },
+            stats: {
+                nbFlights: 0,
+                lastFlightDuration: 0,
+                totalFlightDuration: 0,
+                massStorageSize: 0,
+                massStorageUsedSize: 0,
+            },
         },
         mutations: {
             setZeroThrottle(state: StoreInfo) {
@@ -418,6 +425,34 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             if (typeChosen !== undefined) {
                 store.state.home.typeChosen = typeChosen;
+            }
+        } else if (packet.action === 'stats') {
+            const {
+                nbFlights,
+                lastFlightDuration,
+                totalFlightDuration,
+                massStorageSize,
+                massStorageUsedSize,
+            } = packet.data;
+
+            if (nbFlights !== undefined) {
+                store.state.stats.nbFlights = nbFlights;
+            }
+
+            if (lastFlightDuration !== undefined) {
+                store.state.stats.lastFlightDuration = lastFlightDuration;
+            }
+
+            if (totalFlightDuration !== undefined) {
+                store.state.stats.totalFlightDuration = totalFlightDuration;
+            }
+
+            if (massStorageSize !== undefined) {
+                store.state.stats.massStorageSize = massStorageSize;
+            }
+
+            if (massStorageUsedSize !== undefined) {
+                store.state.stats.massStorageUsedSize = massStorageUsedSize;
             }
         }
     });

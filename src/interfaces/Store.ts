@@ -10,6 +10,7 @@ import { Permission } from './Permission';
 import { Piloting } from './Piloting';
 import { RTH } from './RTH';
 import { State } from './State';
+import { Stats } from './Stats';
 import { User } from './User';
 
 export interface Store {
@@ -30,4 +31,5 @@ export interface Store {
     rth: RTH;
     state: State;
     user: User;
+    stats: Stats;
 }

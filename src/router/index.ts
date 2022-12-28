@@ -3,6 +3,7 @@ import Dashboard from '../views/Dashboard.vue';
 import SettingsRTH from '../views/SettingsRTH.vue';
 import Home from '../views/Home.vue';
 import Health from '../views/Health.vue';
+import Statistics from '../views/Statistics.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -24,6 +25,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/settings/rth',
         name: 'SettingsRTH',
         component: SettingsRTH,
+    },
+    {
+        path: '/statistics',
+        name: 'Statistics',
+        component: Statistics,
     },
 ];
 

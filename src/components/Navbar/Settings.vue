@@ -41,6 +41,10 @@ export default defineComponent({
                     name: 'Camera',
                     path: '/settings/camera',
                 },
+                {
+                    name: 'Statistics',
+                    path: '/statistics',
+                },
             ],
         };
     },
@@ -91,7 +95,7 @@ export default defineComponent({
         position: absolute;
         top: 120%;
         right: 0;
-        width: 200%;
+        width: 300%;
         list-style: none;
         li {
             background: rgba(#3d3d3d, 0.8);
