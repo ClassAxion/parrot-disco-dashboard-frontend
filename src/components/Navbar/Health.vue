@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { Health } from '@/interfaces/Health';
+import { Health } from '@/interfaces/store/Health';
 import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';

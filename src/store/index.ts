@@ -269,12 +269,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             store.state.battery.percent = percent;
         } else if (packet.action === 'state') {
-            const {
-                flyingTime,
-                flyingState,
-                canTakeOff,
-                isDiscoConnected,
-            } = packet.data;
+            const { flyingTime, flyingState, isDiscoConnected } = packet.data;
 
             if (flyingTime !== undefined) {
                 store.state.state.flyingTime = flyingTime;
@@ -282,10 +277,6 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             if (flyingState !== undefined) {
                 store.state.state.flyingState = flyingState;
-            }
-
-            if (canTakeOff !== undefined) {
-                store.state.state.canTakeOff = canTakeOff;
             }
 
             if (isDiscoConnected !== undefined) {
