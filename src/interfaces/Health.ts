@@ -1,5 +1,4 @@
 export interface Health {
-    isGoodToTakeOff: boolean;
     magnetoCalibrationRequired: boolean;
     pitotCalibrationRequired: boolean;
     imuState: boolean;
@@ -9,4 +8,5 @@ export interface Health {
     magnetometerState: boolean;
     verticalCameraState: boolean;
     motorState: boolean;
+    flightPlanAvailability: boolean;
 }

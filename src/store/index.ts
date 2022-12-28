@@ -41,16 +41,16 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 availableSatellites: 0,
             },
             health: {
-                isGoodToTakeOff: true,
-                magnetoCalibrationRequired: false,
+                magnetoCalibrationRequired: true,
                 pitotCalibrationRequired: true,
-                imuState: true,
-                barometerState: true,
-                ultrasonicState: true,
-                gpsState: true,
-                magnetometerState: true,
-                verticalCameraState: true,
-                motorState: true,
+                imuState: false,
+                barometerState: false,
+                ultrasonicState: false,
+                gpsState: false,
+                magnetometerState: false,
+                verticalCameraState: false,
+                motorState: false,
+                flightPlanAvailability: false,
             },
             home: {
                 latitude: 0,
@@ -375,6 +375,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 gpsState,
                 magnetometerState,
                 verticalCameraState,
+                flightPlanAvailability,
             } = packet.data;
 
             if (magnetoCalibrationRequired !== undefined)
@@ -398,6 +399,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             if (verticalCameraState !== undefined)
                 store.state.health.verticalCameraState = verticalCameraState;
+
+            if (flightPlanAvailability !== undefined)
+                store.state.health.flightPlanAvailability = flightPlanAvailability;
         } else if (packet.action === 'home') {
             const {
                 latitude,

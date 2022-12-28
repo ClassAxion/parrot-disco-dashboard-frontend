@@ -91,9 +91,9 @@ export default defineComponent({
                     name: 'Vertical Camera',
                 },
                 {
-                    id: 'motorState',
+                    id: 'flightPlanAvailability',
                     canBeCalibrated: false,
-                    name: 'Motor',
+                    name: 'Flight plan availablility',
                 },
             ],
         };
