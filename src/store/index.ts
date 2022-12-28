@@ -90,7 +90,6 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             },
             state: {
                 flyingState: 0,
-                canTakeOff: false,
                 isDiscoConnected: false,
                 flyingTime: 0,
             },

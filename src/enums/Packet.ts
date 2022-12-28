@@ -1,0 +1,17 @@
+export enum Packet {
+    INIT = 'init',
+    ALERT = 'alert',
+    PING = 'ping',
+    LATENCY = 'latency',
+    BATTERY = 'battery',
+    STATE = 'state',
+    PERMISSION = 'permission',
+    GPS = 'gps',
+    ALTITUDE = 'altitude',
+    ATTITUDE = 'attitude',
+    SPEED = 'speed',
+    CAMERA = 'camera',
+    HEALTH = 'health',
+    HOME = 'home',
+    STATS = 'stats',
+}
