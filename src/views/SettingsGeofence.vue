@@ -18,7 +18,11 @@
                         ></sup
                     >
                 </p>
-                <input type="text" v-model="maxAltitude" />
+                <input
+                    type="number"
+                    :value="geofence.maxAltitude?.current"
+                    @change="e => saveFromChange('maxAltitude', e)"
+                />
             </div>
 
             <div class="inputWrapper">
@@ -32,7 +36,11 @@
                         ></sup
                     >
                 </p>
-                <input type="text" v-model="minAltitude" />
+                <input
+                    type="number"
+                    :value="geofence.minAltitude?.current"
+                    @change="e => saveFromChange('minAltitude', e)"
+                />
             </div>
 
             <div class="inputWrapper">
@@ -46,7 +54,11 @@
                         ></sup
                     >
                 </p>
-                <input type="text" v-model="circlingAltitude" />
+                <input
+                    type="number"
+                    :value="geofence.circlingAltitude?.current"
+                    @change="e => saveFromChange('circlingAltitude', e)"
+                />
             </div>
 
             <div class="inputWrapper">
@@ -60,16 +72,12 @@
                         ></sup
                     >
                 </p>
-                <input type="text" v-model="maxDistance" />
+                <input
+                    type="number"
+                    :value="geofence.maxDistance?.current"
+                    @change="e => saveFromChange('maxDistance', e)"
+                />
             </div>
-
-            <button type="button" class="refresh" @click="refresh">
-                Refresh
-            </button>
-
-            <button type="button" class="save" @click="submit">
-                Submit
-            </button>
 
             <div class="inputWrapper">
                 <p class="title">
@@ -115,10 +123,6 @@ declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         peer: Peer;
         geofence: Geofence;
-        maxAltitude: number;
-        minAltitude: number;
-        circlingAltitude: number;
-        maxDistance: number;
     }
 }
 
@@ -128,12 +132,7 @@ export default defineComponent({
         Background,
     },
     data() {
-        return {
-            maxAltitude: 0,
-            minAltitude: 0,
-            maxDistance: 0,
-            circlingAltitude: 0,
-        };
+        return {};
     },
     computed: {
         ...mapState({
@@ -141,18 +140,20 @@ export default defineComponent({
         }),
     },
     methods: {
-        submit() {
+        save(key: string, value: any) {
             this.peer.send(
                 JSON.stringify({
                     action: 'geofence',
                     data: {
-                        maxAltitude: this.maxAltitude,
-                        minAltitude: this.minAltitude,
-                        circlingAltitude: this.circlingAltitude,
-                        maxDistance: this.maxDistance,
+                        [key]: value,
                     },
                 }),
             );
+        },
+        saveFromChange(key: string, e: Event) {
+            const value = (e.target as HTMLInputElement).value;
+
+            this.save(key, value);
         },
         setGeofence(isEnabled: boolean) {
             this.peer.send(
@@ -164,19 +165,6 @@ export default defineComponent({
                 }),
             );
         },
-        refresh() {
-            if (!!this.geofence.maxAltitude)
-                this.maxAltitude = this.geofence.maxAltitude.current;
-            if (!!this.geofence.minAltitude)
-                this.minAltitude = this.geofence.minAltitude.current;
-            if (!!this.geofence.maxDistance)
-                this.maxDistance = this.geofence.maxDistance.current;
-            if (!!this.geofence.circlingAltitude)
-                this.circlingAltitude = this.geofence.circlingAltitude.current;
-        },
-    },
-    created() {
-        this.refresh();
     },
 });
 </script>
@@ -356,12 +344,6 @@ export default defineComponent({
         }
     }
 
-    .save {
-        margin-left: 2rem !important;
-    }
-
-    .refresh,
-    .save,
     .disable,
     .enable {
         all: unset;
