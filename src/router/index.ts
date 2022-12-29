@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Dashboard from '../views/Dashboard.vue';
 import SettingsRTH from '../views/SettingsRTH.vue';
+import SettingsGeofence from '../views/SettingsGeofence.vue';
 import Home from '../views/Home.vue';
 import Health from '../views/Health.vue';
 import Statistics from '../views/Statistics.vue';
@@ -25,6 +26,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/settings/rth',
         name: 'SettingsRTH',
         component: SettingsRTH,
+    },
+    {
+        path: '/settings/geofence',
+        name: 'SettingsGeofence',
+        component: SettingsGeofence,
     },
     {
         path: '/statistics',

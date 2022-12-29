@@ -38,6 +38,10 @@ export default defineComponent({
                     path: '/settings/rth',
                 },
                 {
+                    name: 'Geofence',
+                    path: '/settings/geofence',
+                },
+                {
                     name: 'Camera',
                     path: '/settings/camera',
                 },
