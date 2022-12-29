@@ -32,6 +32,14 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 currentPanPosition: 0,
                 maxTiltSpeed: 0,
                 maxPanSpeed: 0,
+                pictureFormat: 'unknown',
+                autoWhiteBalance: 'unknown',
+                exposition: { value: 0, min: -1.5, max: 1.5 },
+                saturation: { value: 0, min: -100, max: 100 },
+                videoStabilization: 'unknown',
+                videoRecordingMode: 'unknown',
+                videoFramerate: 'unknown',
+                videoResolutions: 'unknown',
             },
             gps: {
                 latitude: 0,
@@ -347,7 +355,43 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             store.state.orientation.speed = speed;
         } else if (packet.action === 'camera') {
-            const { maxSpeed, orientation } = packet.data;
+            const {
+                maxSpeed,
+                orientation,
+                pictureFormat,
+                autoWhiteBalance,
+                exposition,
+                saturation,
+                timelapse,
+                videoStabilization,
+                videoRecordingMode,
+                videoFramerate,
+                videoResolutions,
+            } = packet.data;
+
+            if (!!pictureFormat)
+                store.state.camera.pictureFormat = pictureFormat;
+
+            if (!!autoWhiteBalance)
+                store.state.camera.autoWhiteBalance = autoWhiteBalance;
+
+            if (!!exposition) store.state.camera.exposition = exposition;
+
+            if (!!saturation) store.state.camera.saturation = saturation;
+
+            if (!!timelapse) store.state.camera.timelapse = timelapse;
+
+            if (!!videoStabilization)
+                store.state.camera.videoStabilization = videoStabilization;
+
+            if (!!videoRecordingMode)
+                store.state.camera.videoRecordingMode = videoRecordingMode;
+
+            if (!!videoFramerate)
+                store.state.camera.videoFramerate = videoFramerate;
+
+            if (!!videoResolutions)
+                store.state.camera.videoResolutions = videoResolutions;
 
             if (maxSpeed !== undefined) {
                 store.state.camera.maxPanSpeed = maxSpeed.maxPanSpeed;
