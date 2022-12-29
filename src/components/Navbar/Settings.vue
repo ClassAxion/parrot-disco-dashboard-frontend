@@ -1,5 +1,5 @@
 <template>
-    <div class="settings" @click="toggleShow" :class="isEnabledClass">
+    <div class="settings" @click="toggleShow">
         <span><img src="./../../assets/img/settings.svg" alt="settings"/></span>
         <ul class="options" v-if="show">
             <li
@@ -23,7 +23,6 @@ import { mapState } from 'vuex';
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         peer: Peer;
-        isEnabled: boolean;
     }
 }
 
@@ -32,38 +31,45 @@ export default defineComponent({
     data() {
         return {
             show: false,
-            items: [
-                {
-                    name: 'RTH',
-                    path: '/settings/rth',
-                },
-                {
-                    name: 'Geofence',
-                    path: '/settings/geofence',
-                },
-                {
-                    name: 'Camera',
-                    path: '/settings/camera',
-                },
-                {
-                    name: 'Statistics',
-                    path: '/statistics',
-                },
-            ],
         };
     },
     computed: {
         ...mapState({
-            isEnabled: state => (state as Store).permission.isSuperUser,
+            permissions: state => (state as Store).permission,
         }),
-        isEnabledClass() {
-            return this.isEnabled ? '' : 'disabled';
+        items() {
+            const list = [
+                {
+                    name: 'Statistics',
+                    path: '/statistics',
+                },
+            ];
+
+            if (this.permissions?.isSuperUser) {
+                list.push(
+                    {
+                        name: 'RTH',
+                        path: '/settings/rth',
+                    },
+                    {
+                        name: 'Geofence',
+                        path: '/settings/geofence',
+                    },
+                );
+            }
+
+            if (this.permissions?.canMoveCamera) {
+                list.push({
+                    name: 'Camera',
+                    path: '/settings/camera',
+                });
+            }
+
+            return list;
         },
     },
     methods: {
         toggleShow() {
-            if (!this.isEnabled) return;
-
             this.show = !this.show;
         },
         navigate(path: string) {
