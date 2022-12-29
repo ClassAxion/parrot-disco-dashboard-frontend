@@ -17,7 +17,7 @@
                     >
                 </p>
                 <input
-                    type="text"
+                    type="number"
                     v-model="camera.exposition.value"
                     @focusout="e => saveFromInput(e, 'exposition')"
                 />
@@ -33,7 +33,7 @@
                     >
                 </p>
                 <input
-                    type="text"
+                    type="number"
                     v-model="camera.saturation.value"
                     @focusout="e => saveFromInput(e, 'saturation')"
                 />
