@@ -39,6 +39,10 @@ export default defineComponent({
                 return 0;
             }
 
+            if (!this.homeLocation.latitude || !this.homeLocation.longitude) {
+                return 0;
+            }
+
             const discoLatLng: LatLng = latLng(
                 this.discoLocation.latitude,
                 this.discoLocation.longitude,
