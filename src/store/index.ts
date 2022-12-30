@@ -96,6 +96,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             },
             rth: {
                 delay: 0,
+                inProgress: false,
             },
             state: {
                 flyingState: 0,
@@ -522,6 +523,11 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             if (isEnabled !== undefined)
                 store.state.geofence.isEnabled = isEnabled;
+        } else if (packet.action === 'rth') {
+            const { inProgress } = packet.data;
+
+            if (inProgress !== undefined)
+                store.state.rth.inProgress = inProgress;
         }
     });
 
