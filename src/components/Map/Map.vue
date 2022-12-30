@@ -39,7 +39,10 @@
             >
             </l-marker>
         </l-map>
-        <div class="locateHome" v-if="isDiscoLocationAvailable">
+        <div
+            class="locateHome"
+            v-if="isDiscoLocationAvailable && isHomeLocationAvailable"
+        >
             <img
                 :src="arrowIcon"
                 :style="`transform: rotate(${homeAngle}deg)`"
