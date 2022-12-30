@@ -1,6 +1,6 @@
 <template>
     <div class="geofence">
-        <Background />
+        <Stream />
         <form>
             <h1>Geofence</h1>
             <router-link to="/dashboard" class="back"
@@ -112,7 +112,7 @@
 </template>
 
 <script lang="ts">
-import Background from '@/components/Background/Background.vue';
+import Stream from '@/components/Stream/Stream.vue';
 import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
@@ -129,7 +129,7 @@ declare module '@vue/runtime-core' {
 export default defineComponent({
     inject: ['peer'],
     components: {
-        Background,
+        Stream,
     },
     data() {
         return {};
