@@ -207,6 +207,40 @@
                 </div>
             </div>
 
+            <!--
+            <div class="inputWrapper">
+                <p class="title">Stream mode</p>
+                <div
+                    class="select"
+                    @click="streamMode.showValues = !streamMode.showValues"
+                >
+                    <span>{{ camera.streamMode }}</span>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        version="1.1"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            fill="#3d3d3d"
+                            d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M7,10L12,15L17,10H7Z"
+                        />
+                    </svg>
+                    <ul class="values" v-if="streamMode.showValues">
+                        <li
+                            v-for="value in streamMode.values"
+                            @click="save('streamMode', value)"
+                            :key="value"
+                        >
+                            {{ value }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            -->
+
             <p class="poland">Made with <span>❤</span> in Poland</p>
         </form>
         <div class="overlay"></div>
@@ -258,6 +292,14 @@ export default defineComponent({
             videoFramerate: {
                 showValues: false,
                 values: ['24_FPS', '25_FPS', '30_FPS'],
+            },
+            streamMode: {
+                showValues: false,
+                values: [
+                    'low_latency',
+                    'high_reliability',
+                    'high_reliability_low_framerate',
+                ],
             },
         };
     },

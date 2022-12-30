@@ -40,6 +40,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 videoRecordingMode: 'unknown',
                 videoFramerate: 'unknown',
                 videoResolutions: 'unknown',
+                streamMode: 'unknown',
             },
             gps: {
                 latitude: 0,
@@ -367,6 +368,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 videoRecordingMode,
                 videoFramerate,
                 videoResolutions,
+                streamMode,
             } = packet.data;
 
             if (!!pictureFormat)
@@ -392,6 +394,8 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             if (!!videoResolutions)
                 store.state.camera.videoResolutions = videoResolutions;
+
+            if (!!streamMode) store.state.camera.streamMode = streamMode;
 
             if (maxSpeed !== undefined) {
                 store.state.camera.maxPanSpeed = maxSpeed.maxPanSpeed;

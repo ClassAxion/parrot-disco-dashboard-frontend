@@ -19,4 +19,5 @@ export interface Camera {
     videoRecordingMode: string;
     videoFramerate: string;
     videoResolutions: string;
+    streamMode: string;
 }
