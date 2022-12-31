@@ -1,5 +1,7 @@
 <template>
     <div class="buttons">
+        <Record />
+        <TakePicture />
         <Centering />
         <CircleLeft />
         <CircleRight />
@@ -11,6 +13,8 @@
 </template>
 
 <script>
+import Record from './Record.vue';
+import TakePicture from './TakePicture.vue';
 import Centering from './Centering.vue';
 import CircleLeft from './CircleLeft.vue';
 import CircleRight from './CircleRight.vue';
@@ -27,6 +31,8 @@ export default {
         Tests,
         FlightPlan,
         Throttle,
+        Record,
+        TakePicture,
     },
 };
 </script>

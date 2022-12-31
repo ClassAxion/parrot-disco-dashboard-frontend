@@ -31,6 +31,6 @@ export default {
     z-index: 1;
     transition: 0.2s all ease-in-out;
     display: grid;
-    grid-template-columns: 30px 140px 140px 40px;
+    grid-template-columns: 80px 140px 140px 40px;
 }
 </style>

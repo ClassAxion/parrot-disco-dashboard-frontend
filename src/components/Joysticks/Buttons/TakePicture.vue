@@ -1,6 +1,14 @@
 <template>
-    <button :class="isEnabledClass" @click="click" title="center the camera">
-        <img :src="centerIcon" alt="circle" />
+    <button
+        :class="isEnabledClass"
+        @click="click"
+        :title="
+            camera.canTakePicture
+                ? 'take picture'
+                : 'taking picture unavailable'
+        "
+    >
+        <img src="./../../../assets/img/camera.svg" alt="circle" />
     </button>
 </template>
 
@@ -23,9 +31,12 @@ export default defineComponent({
     computed: {
         ...mapState({
             isEnabled: state => (state as Store).permission.canMoveCamera,
+            camera: state => (state as Store).camera,
         }),
         isEnabledClass() {
-            return this.isEnabled ? '' : 'disabled';
+            return this.isEnabled && this.camera.canTakePicture
+                ? ''
+                : 'disabled';
         },
         centerIcon() {
             return Center;
@@ -35,7 +46,7 @@ export default defineComponent({
         click() {
             if (!this.isEnabled) return;
 
-            this.peer.send(JSON.stringify({ action: 'camera-center' }));
+            this.peer.send(JSON.stringify({ action: 'take-picture' }));
         },
     },
 });

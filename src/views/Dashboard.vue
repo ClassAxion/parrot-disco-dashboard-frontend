@@ -45,7 +45,7 @@ export default defineComponent({
 <style lang="scss">
 .dashboard {
     display: grid;
-    grid-template-columns: 300px 1fr 350px;
+    grid-template-columns: 300px 1fr 400px;
     width: 100vw;
     height: 100vh;
     background-color: #3d3d3d;

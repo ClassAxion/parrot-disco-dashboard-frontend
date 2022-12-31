@@ -1,4 +1,6 @@
 export interface Camera {
+    isRecording: boolean;
+    canTakePicture: boolean;
     tilt: number;
     pan: number;
     maxTiltSpeed: number;

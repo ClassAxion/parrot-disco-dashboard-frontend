@@ -41,6 +41,8 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 videoFramerate: 'unknown',
                 videoResolutions: 'unknown',
                 streamMode: 'unknown',
+                isRecording: false,
+                canTakePicture: true,
             },
             gps: {
                 latitude: 0,
@@ -370,7 +372,14 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 videoFramerate,
                 videoResolutions,
                 streamMode,
+                isRecording,
+                canTakePicture,
             } = packet.data;
+
+            if (!!isRecording) store.state.camera.isRecording = isRecording;
+
+            if (!!canTakePicture)
+                store.state.camera.canTakePicture = canTakePicture;
 
             if (!!pictureFormat)
                 store.state.camera.pictureFormat = pictureFormat;
