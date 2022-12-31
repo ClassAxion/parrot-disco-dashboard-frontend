@@ -42,8 +42,11 @@ export default defineComponent({
     computed: {
         ...mapState({
             isPitchEnabled: state =>
+                (state as Store).state.flyingState !== 0 &&
                 (state as Store).permission.canPilotingPitch,
-            isRollEnabled: state => (state as Store).permission.canPilotingRoll,
+            isRollEnabled: state =>
+                (state as Store).state.flyingState !== 0 &&
+                (state as Store).permission.canPilotingRoll,
             tiltMaxSpeed: state => (state as Store).camera.maxTiltSpeed,
             panMaxSpeed: state => (state as Store).camera.maxPanSpeed,
         }),

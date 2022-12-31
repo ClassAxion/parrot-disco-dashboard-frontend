@@ -6,7 +6,6 @@
         min="-100"
         max="100"
         @change="updatePosition"
-        :disabled="!isThrottleEnabled"
     />
     <div class="throttle"></div>
 </template>
@@ -33,6 +32,7 @@ export default defineComponent({
     computed: {
         ...mapState({
             isThrottleEnabled: state =>
+                (state as Store).state.flyingState !== 0 &&
                 (state as Store).permission.canPilotingThrottle,
             stateThrottle: state => (state as Store).piloting.throttle,
         }),
@@ -42,7 +42,10 @@ export default defineComponent({
             updatePiloting: 'updatePiloting',
         }),
         updatePosition() {
-            if (!this.isThrottleEnabled) return;
+            if (!this.isThrottleEnabled) {
+                this.throttle = 0;
+                return;
+            }
 
             let throttle = this.throttle;
 
@@ -108,5 +111,9 @@ export default defineComponent({
         width: 100px;
         background: red;
     }
+}
+.slider:disabled {
+    background-color: initial;
+    color: rgb(197, 197, 197);
 }
 </style>

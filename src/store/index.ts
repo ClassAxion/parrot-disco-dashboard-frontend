@@ -376,9 +376,10 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 canTakePicture,
             } = packet.data;
 
-            if (!!isRecording) store.state.camera.isRecording = isRecording;
+            if (isRecording !== undefined)
+                store.state.camera.isRecording = isRecording;
 
-            if (!!canTakePicture)
+            if (canTakePicture !== undefined)
                 store.state.camera.canTakePicture = canTakePicture;
 
             if (!!pictureFormat)
@@ -387,9 +388,11 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             if (!!autoWhiteBalance)
                 store.state.camera.autoWhiteBalance = autoWhiteBalance;
 
-            if (!!exposition) store.state.camera.exposition = exposition;
+            if (exposition !== undefined)
+                store.state.camera.exposition = exposition;
 
-            if (!!saturation) store.state.camera.saturation = saturation;
+            if (saturation !== undefined)
+                store.state.camera.saturation = saturation;
 
             if (!!timelapse) store.state.camera.timelapse = timelapse;
 

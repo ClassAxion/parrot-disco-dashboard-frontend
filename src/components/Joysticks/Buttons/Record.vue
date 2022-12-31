@@ -2,7 +2,9 @@
     <button
         :class="isEnabledClass"
         @click="click"
-        :title="camera.isRecording ? 'recording' : 'start recording'"
+        :title="
+            camera.isRecording ? 'recording, click to stop' : 'start recording'
+        "
     >
         <svg
             xmlns="http://www.w3.org/2000/svg"

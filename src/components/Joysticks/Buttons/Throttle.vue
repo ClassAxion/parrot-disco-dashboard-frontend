@@ -23,10 +23,11 @@ export default defineComponent({
     computed: {
         ...mapState({
             isThrottleEnabled: state =>
+                (state as Store).state.flyingState !== 0 &&
                 (state as Store).permission.canPilotingThrottle,
         }),
         isDisabledClass() {
-            return this.isThrottleEnabled ? 'disabled' : '';
+            return this.isThrottleEnabled ? '' : 'disabled';
         },
     },
     methods: {

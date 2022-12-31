@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import { Store } from '@/interfaces/Store';
+import { Camera } from '@/interfaces/store/Camera';
 import { Instance as Peer } from 'simple-peer';
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
@@ -23,6 +24,7 @@ declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         peer: Peer;
         isEnabled: boolean;
+        camera: Camera;
     }
 }
 

@@ -10,7 +10,7 @@
             <div class="inputWrapper">
                 <p class="title">
                     Exposition
-                    <small
+                    <small v-if="!!camera.exposition"
                         >[min <strong>{{ camera.exposition.min }}</strong> max
                         <strong>{{ camera.exposition.max }}</strong
                         >]</small
@@ -26,7 +26,7 @@
             <div class="inputWrapper">
                 <p class="title">
                     Saturation
-                    <small
+                    <small v-if="!!camera.exposition"
                         >[min <strong>{{ camera.saturation.min }}</strong> max
                         <strong>{{ camera.saturation.max }}</strong
                         >]</small
