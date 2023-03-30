@@ -1,17 +1,28 @@
 <template>
     <div class="buttons">
-        <TakeOff />
+        <TakeOff v-if="!isFlying" />
+        <Land v-else />
         <Disconnect />
         <Emergency />
         <p class="poland">Made with <span>❤</span> in Poland</p>
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Store } from '@/interfaces/Store';
+import { Instance as Peer } from 'simple-peer';
+import { mapState } from 'vuex';
 import Land from './Land.vue';
 import TakeOff from './TakeOff.vue';
 import Disconnect from './Disconnect.vue';
 import Emergency from './Emergency.vue';
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        peer: Peer;
+        isFlying: boolean;
+    }
+}
 
 export default {
     components: {
@@ -19,6 +30,13 @@ export default {
         TakeOff,
         Disconnect,
         Emergency,
+    },
+    inject: ['peer'],
+    computed: {
+        ...mapState({
+            isFlying: state =>
+                [1, 2, 3, 4, 5].includes((state as Store).state.flyingState),
+        }),
     },
 };
 </script>
