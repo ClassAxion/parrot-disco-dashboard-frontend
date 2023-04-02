@@ -1,5 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Dashboard from '../views/Dashboard.vue';
+import OnlyVideo from '../views/OnlyVideo.vue';
+import Mobile from '../views/Mobile.vue';
 import SettingsRTH from '../views/SettingsRTH.vue';
 import SettingsGeofence from '../views/SettingsGeofence.vue';
 import SettingsCamera from '../views/SettingsCamera.vue';
@@ -17,6 +19,16 @@ const routes: Array<RouteRecordRaw> = [
         path: '/dashboard',
         name: 'Dashboard',
         component: Dashboard,
+    },
+    {
+        path: '/only-video',
+        name: 'OnlyVideo',
+        component: OnlyVideo,
+    },
+    {
+        path: '/mobile',
+        name: 'Mobile',
+        component: Mobile,
     },
     {
         path: '/health',

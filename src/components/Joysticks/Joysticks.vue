@@ -3,24 +3,35 @@
         <div></div>
         <Camera />
         <Pilot />
-        <Throttle />
-        <Buttons />
+        <Throttle v-if="currentRouteName != 'Mobile'" />
+        <Buttons v-if="currentRouteName != 'Mobile'" />
     </div>
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import Camera from './Camera.vue';
 import Pilot from './Pilot.vue';
 import Buttons from './Buttons/Buttons.vue';
 import Throttle from './Throttle.vue';
-export default {
+
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {}
+}
+
+export default defineComponent({
     components: {
         Camera,
         Buttons,
         Pilot,
         Throttle,
     },
-};
+    computed: {
+        currentRouteName() {
+            return this.$route.name;
+        },
+    },
+});
 </script>
 
 <style lang="scss" scoped>

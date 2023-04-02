@@ -118,6 +118,12 @@ export default defineComponent({
                 case 'Dashboard':
                     this.$router.push('/dashboard');
                     break;
+                case 'Only Video':
+                    this.$router.push('/only-video');
+                    break;
+                case 'Mobile':
+                    this.$router.push('/mobile');
+                    break;
                 default:
                     this.toast.warning('This view is unsupported right now :(');
             }
@@ -126,7 +132,7 @@ export default defineComponent({
     data() {
         return {
             username: '',
-            views: ['Dashboard', 'Only Video'],
+            views: ['Dashboard', 'Only Video', 'Mobile'],
             showViews: false,
             selectedView: 'Dashboard',
             token: '',
