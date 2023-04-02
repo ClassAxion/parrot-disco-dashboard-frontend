@@ -26,6 +26,7 @@ declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         health: Health;
         isGoodToTakeOff: boolean;
+        color: string;
     }
 }
 
