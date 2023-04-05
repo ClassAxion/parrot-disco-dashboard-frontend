@@ -60,7 +60,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 gpsState: false,
                 magnetometerState: false,
                 verticalCameraState: false,
-                motorState: false,
+                motorState: true,
                 flightPlanAvailability: false,
             },
             home: {
