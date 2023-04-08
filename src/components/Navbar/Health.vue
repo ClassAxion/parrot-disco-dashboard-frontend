@@ -42,10 +42,12 @@ export default defineComponent({
             const keys = Object.keys(this.health);
 
             for (const key of keys) {
-                if (key.endsWith('Required')) {
-                    if (this.health[key]) return false;
-                } else {
-                    if (!this.health[key]) return false;
+                if (!['flightPlanAvailability'].includes(key)) {
+                    if (key.endsWith('Required')) {
+                        if (this.health[key]) return false;
+                    } else {
+                        if (!this.health[key]) return false;
+                    }
                 }
             }
 

@@ -38,7 +38,6 @@ export default defineComponent({
                 'gpsState',
                 'magnetometerState',
                 'verticalCameraState',
-                'flightPlanAvailability',
             ];
 
             for (const key of states) {
