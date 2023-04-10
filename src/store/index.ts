@@ -518,6 +518,7 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 minAltitude,
                 maxDistance,
                 circlingAltitude,
+                rthAltitude,
                 isEnabled,
             } = packet.data;
 
@@ -535,6 +536,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
             if (isEnabled !== undefined)
                 store.state.geofence.isEnabled = isEnabled;
+
+            if (rthAltitude !== undefined)
+                store.state.geofence.rthAltitude = rthAltitude;
         } else if (packet.action === 'rth') {
             const { inProgress } = packet.data;
 

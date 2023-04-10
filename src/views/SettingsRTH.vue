@@ -96,6 +96,24 @@
                 </button>
             </div>
 
+            <div class="inputWrapper">
+                <p class="title">
+                    RTH altitude
+                    <sup
+                        >[meters]
+                        <span v-if="!!geofence.rthAltitude"
+                            >[min {{ geofence.rthAltitude?.min }}] [max
+                            {{ geofence.rthAltitude?.max }}]</span
+                        ></sup
+                    >
+                </p>
+                <input
+                    type="number"
+                    :value="geofence.rthAltitude?.current"
+                    @change="e => saveFromChange('rthAltitude', e)"
+                />
+            </div>
+
             <p class="poland">Made with <span>❤</span> in Poland</p>
         </form>
         <div class="overlay"></div>
@@ -158,6 +176,7 @@ export default defineComponent({
                 latitude: (state as Store).home.latitudeWanted,
                 longitude: (state as Store).home.longitudeWanted,
             }),
+            geofence: state => (state as Store).geofence,
         }),
         availableRTHValues() {
             return this.rth.values;
@@ -211,6 +230,21 @@ export default defineComponent({
                 this.home.longitude = this.homeLocation.longitude;
                 this.home.altitude = this.homeLocation.altitude;
             }
+        },
+        save(key: string, value: any) {
+            this.peer.send(
+                JSON.stringify({
+                    action: 'geofence',
+                    data: {
+                        [key]: value,
+                    },
+                }),
+            );
+        },
+        saveFromChange(key: string, e: Event) {
+            const value = (e.target as HTMLInputElement).value;
+
+            this.save(key, value);
         },
     },
     created() {

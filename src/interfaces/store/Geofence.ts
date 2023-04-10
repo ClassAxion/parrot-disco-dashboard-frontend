@@ -19,5 +19,10 @@ export interface Geofence {
         min: number;
         max: number;
     };
+    rthAltitude?: {
+        current: number;
+        min: number;
+        max: number;
+    };
     isEnabled: boolean;
 }
