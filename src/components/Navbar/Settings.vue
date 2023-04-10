@@ -55,6 +55,10 @@ export default defineComponent({
                         name: 'Geofence',
                         path: '/settings/geofence',
                     },
+                    {
+                        name: 'Autonomous',
+                        path: '/settings/autonomous',
+                    },
                 );
             }
 

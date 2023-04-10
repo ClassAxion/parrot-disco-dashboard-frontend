@@ -8,6 +8,7 @@ import SettingsCamera from '../views/SettingsCamera.vue';
 import Home from '../views/Home.vue';
 import Health from '../views/Health.vue';
 import Statistics from '../views/Statistics.vue';
+import SettingsAutonomous from '../views/SettingsAutonomous.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -49,6 +50,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/settings/camera',
         name: 'SettingsCamera',
         component: SettingsCamera,
+    },
+    {
+        path: '/settings/autonomous',
+        name: 'SettingsAutonomous',
+        component: SettingsAutonomous,
     },
     {
         path: '/statistics',

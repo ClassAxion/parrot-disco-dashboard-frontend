@@ -115,6 +115,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             geofence: {
                 isEnabled: false,
             },
+            autonomous: {
+                isEnabled: false,
+            },
         },
         mutations: {
             setZeroThrottle(state: StoreInfo) {
@@ -512,6 +515,11 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             if (massStorageUsedSize !== undefined) {
                 store.state.stats.massStorageUsedSize = massStorageUsedSize;
             }
+        } else if (packet.action === 'autonomous') {
+            const { isEnabled } = packet.data;
+
+            if (isEnabled !== undefined)
+                store.state.autonomous.isEnabled = isEnabled;
         } else if (packet.action === 'geofence') {
             const {
                 maxAltitude,
