@@ -41,6 +41,9 @@ export default defineComponent({
     },
     computed: {
         ...mapState({
+            isGamepadActive: state =>
+                (state as Store).gamepad.isConnected &&
+                (state as Store).gamepad.isEnabled,
             isPitchEnabled: state =>
                 (state as Store).state.flyingState !== 0 &&
                 (state as Store).permission.canPilotingPitch,
@@ -99,6 +102,8 @@ export default defineComponent({
             this.updatePosition(0, 0);
         },
         updatePosition(x, y) {
+            if (this.isGamepadActive) return;
+
             if (!this.isPitchEnabled && !this.isRollEnabled) return;
 
             const offset = 64 - 16;
@@ -151,6 +156,8 @@ export default defineComponent({
                     75,
                 ).toFixed(0),
             );
+
+            console.log(pitch, roll);
 
             this.updatePiloting({ roll, pitch });
         },

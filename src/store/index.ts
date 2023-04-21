@@ -13,7 +13,6 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
         state: {
             flights: {},
             isConnected: false,
-            isGamePadActive: false,
             animationFrame: 0,
             stream: null,
             user: {
@@ -118,6 +117,10 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             autonomous: {
                 isEnabled: false,
             },
+            gamepad: {
+                isEnabled: false,
+                isConnected: false,
+            },
         },
         mutations: {
             setZeroThrottle(state: StoreInfo) {
@@ -184,6 +187,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                     }
                 }
             },
+            setGamepad(state: StoreInfo, isEnabled: boolean) {
+                state.gamepad.isEnabled = isEnabled;
+            },
         },
         actions: {
             updatePiloting(
@@ -200,6 +206,9 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
             },
             setZeroThrottle({ commit }) {
                 commit('setZeroThrottle');
+            },
+            setGamepad({ commit }, isEnabled: boolean) {
+                commit('setGamepad', isEnabled);
             },
         },
     });
@@ -556,24 +565,22 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
     });
 
     const buttonMap: { [key: string]: number } = {
-        'map-auto-move': 0,
-        'circle-ccw': 16,
-        'circle-cw': 17,
-        'start-rth': 18,
+        'camera-mode': 0, // Camera Mode
+        'camera-center': 3, // Centering Camera
+        'map-auto-move': -1,
+        'circle-ccw': 4, // Circle CCW
+        'circle-cw': 6, // Circle CW
+        'start-rth': 1, // Start return to home
         'stop-rth': 19,
-        'camera-center': 27,
         'take-off': 20,
-        'start-flight-plan-land': 10,
-        'start-flight-plan-test': 12,
     };
 
     const axisMap: { [key: string]: number } = {
-        'camera-pan': 0,
+        'camera-pan': 5,
         'camera-tilt': 1,
-        'control-mode': 2,
-        roll: 3,
-        pitch: 4,
-        'control-mode-inverted': 5,
+        roll: 0,
+        pitch: 1,
+        throttle: 2,
     };
 
     const variableMap = (value, inMin, inMax, outMin, outMax) =>
@@ -584,12 +591,20 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
         pan: 0,
     };
 
-    let lastAction: string = '';
+    const lastSentPiloting: {
+        pitch: number;
+        roll: number;
+        throttle: number;
+    } = {
+        pitch: 0,
+        roll: 0,
+        throttle: 0,
+    };
 
     const timings: { [key: string]: number } = {};
 
     const run = () => {
-        if (!store.state.isGamePadActive) return;
+        if (!store.state.gamepad.isConnected) return;
 
         const gamepadsRaw = navigator.getGamepads();
 
@@ -603,81 +618,54 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
 
         const buttons = gamepad.buttons;
 
-        for (const buttonIdRaw in buttons) {
-            const button: GamepadButton = buttons[buttonIdRaw];
+        if (store.state.gamepad.isEnabled) {
+            for (const buttonIdRaw in buttons) {
+                const button: GamepadButton = buttons[buttonIdRaw];
 
-            const buttonId: number = Number(buttonIdRaw);
+                const buttonId: number = Number(buttonIdRaw);
 
-            const timing: number = timings['b-' + buttonId];
+                const timing: number = timings['b-' + buttonId];
 
-            if (button.pressed && (!timing || Date.now() - timing > 500)) {
-                timings['b-' + buttonId] = Date.now();
+                if (button.pressed && (!timing || Date.now() - timing > 500)) {
+                    console.log(`Gamepad button pressed: ${buttonId}`);
 
-                if (buttonId === buttonMap['camera-center']) {
-                    peer.send(JSON.stringify({ action: 'camera-center' }));
-                }
+                    timings['b-' + buttonId] = Date.now();
 
-                if (buttonId === buttonMap['take-off']) {
-                    peer.send(JSON.stringify({ action: 'takeOff' }));
-                }
+                    if (buttonId === buttonMap['camera-center']) {
+                        peer.send(JSON.stringify({ action: 'camera-center' }));
+                    }
 
-                if (buttonId === buttonMap['circle-ccw']) {
-                    peer.send(
-                        JSON.stringify({ action: 'circle', data: 'CCW' }),
-                    );
-                }
+                    if (buttonId === buttonMap['circle-ccw']) {
+                        peer.send(
+                            JSON.stringify({ action: 'circle', data: 'CCW' }),
+                        );
+                    }
 
-                if (buttonId === buttonMap['circle-cw']) {
-                    peer.send(JSON.stringify({ action: 'circle', data: 'CW' }));
-                }
+                    if (buttonId === buttonMap['circle-cw']) {
+                        peer.send(
+                            JSON.stringify({ action: 'circle', data: 'CW' }),
+                        );
+                    }
 
-                if (buttonId === buttonMap['map-auto-move']) {
-                    // TODO
-                }
+                    if (buttonId === buttonMap['map-auto-move']) {
+                        // TODO
+                    }
 
-                if (buttonId === buttonMap['start-flight-plan-land']) {
-                    peer.send(
-                        JSON.stringify({
-                            action: 'flightPlanStart',
-                            data: 'land',
-                            force: true,
-                        }),
-                    );
-                }
-
-                if (buttonId === buttonMap['start-flight-plan-test']) {
-                    peer.send(
-                        JSON.stringify({
-                            action: 'flightPlanStart',
-                            data: 'test',
-                            force: true,
-                        }),
-                    );
-                }
-
-                if (buttonId === buttonMap['start-rth']) {
-                    peer.send(JSON.stringify({ action: 'rth', data: true }));
-                }
-
-                if (buttonId === buttonMap['stop-rth']) {
-                    peer.send(JSON.stringify({ action: 'rth', data: false }));
+                    if (buttonId === buttonMap['start-rth']) {
+                        peer.send(
+                            JSON.stringify({ action: 'rth', data: true }),
+                        );
+                    }
                 }
             }
-        }
 
-        const axes = gamepad.axes;
+            const axes = gamepad.axes;
 
-        const isCameraMovement = axes[axisMap['control-mode']] === 1;
+            const isCameraMovement = buttons[buttonMap['camera-mode']].pressed;
 
-        if (isCameraMovement) {
-            if (lastAction !== 'camera') {
-                store.state.piloting.pitch = 0;
-                store.state.piloting.roll = 0;
-
-                lastAction = 'camera';
-            }
-
-            let tiltRaw: number = axes[axisMap['camera-tilt']];
+            let tiltRaw: number = isCameraMovement
+                ? axes[axisMap['camera-tilt']]
+                : 0;
             let panRaw: number = axes[axisMap['camera-pan']];
 
             if (tiltRaw < 0.01 && tiltRaw > -0.01) tiltRaw = 0;
@@ -691,9 +679,12 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 variableMap(panRaw, -1, 1, -20, 20).toFixed(0),
             );
 
+            const isCameraEnabled = store.state.permission.canMoveCamera;
+
             if (
-                lastSentCameraMovement.tilt !== tilt ||
-                lastSentCameraMovement.pan !== pan
+                isCameraEnabled &&
+                (lastSentCameraMovement.tilt !== tilt ||
+                    lastSentCameraMovement.pan !== pan)
             ) {
                 lastSentCameraMovement.tilt = tilt;
                 lastSentCameraMovement.pan = pan;
@@ -708,38 +699,55 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                     }),
                 );
             }
-        } else {
-            if (lastAction !== 'drone') {
-                store.state.piloting.pitch = 0;
-                store.state.piloting.roll = 0;
-
-                lastAction = 'drone';
-            }
 
             let rollRaw: number = axes[axisMap.roll];
             let pitchRaw: number = axes[axisMap.pitch];
+            let throttleRaw: number = axes[axisMap.throttle];
 
-            if (rollRaw < 0.01 && rollRaw > -0.01) rollRaw = 0;
-            if (pitchRaw < 0.01 && pitchRaw > -0.01) pitchRaw = 0;
+            if (rollRaw < 0.05 && rollRaw > -0.05) rollRaw = 0;
+            if (pitchRaw < 0.05 && pitchRaw > -0.05) pitchRaw = 0;
+            if (throttleRaw < 0.05 && throttleRaw > -0.05) throttleRaw = 0;
 
-            const roll: number = Number(
-                variableMap(rollRaw, -1, 1, -75, 75).toFixed(0),
-            );
+            const isRollEnabled =
+                store.state.state.flyingState !== 0 &&
+                store.state.permission.canPilotingRoll;
 
-            const pitch: number = Number(
-                variableMap(pitchRaw, -1, 1, -75, 75).toFixed(0),
-            );
+            const roll: number = !isRollEnabled
+                ? 0
+                : Number(variableMap(rollRaw, -1, 1, -75, 75).toFixed(0));
 
-            /*
-            peer.send(
-                JSON.stringify({
-                    action: 'move',
-                    data: { pitch, roll },
-                }),
-            );
-            */
+            const isPitchEnabled =
+                store.state.state.flyingState !== 0 &&
+                store.state.permission.canPilotingPitch;
 
-            store.commit('setPiloting', { pitch, roll });
+            const pitch: number = !isPitchEnabled
+                ? 0
+                : Number(variableMap(pitchRaw, -1, 1, 75, -75).toFixed(0));
+
+            const isThrottleEnabled =
+                store.state.state.flyingState !== 0 &&
+                store.state.permission.canPilotingThrottle;
+
+            const throttle: number =
+                !isThrottleEnabled && false
+                    ? 0
+                    : Number(
+                          variableMap(throttleRaw, -1, 1, 75, -75).toFixed(0),
+                      );
+
+            if (
+                lastSentPiloting.pitch !== pitch ||
+                lastSentPiloting.roll !== roll ||
+                lastSentPiloting.throttle !== throttle
+            ) {
+                store.state.piloting.pitch = pitch;
+                store.state.piloting.roll = roll;
+                store.state.piloting.throttle = throttle;
+
+                console.log(throttle);
+
+                store.commit('setPiloting', { pitch, roll, throttle });
+            }
         }
 
         store.state.animationFrame = requestAnimationFrame(run);
@@ -755,13 +763,14 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
         const gamepad: Gamepad = o;
 
         if (
-            gamepad.id.includes('0738') &&
-            gamepad.id.includes('2218') &&
-            !store.state.isGamePadActive
+            gamepad.id.startsWith('T.Flight Hotas X (') &&
+            !store.state.gamepad.isConnected
         ) {
-            store.state.isGamePadActive = true;
+            store.state.gamepad.isConnected = true;
 
             store.state.animationFrame = requestAnimationFrame(run);
+
+            toast.success(`Gamepad connected`);
         } else {
             console.error(
                 `Got invalid gamepad: ${gamepad.id} with index ${gamepad.index}`,
@@ -770,14 +779,27 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
     });
 
     window.addEventListener('gamepaddisconnected', () => {
-        store.state.isGamePadActive = false;
+        store.state.gamepad.isConnected = false;
 
-        peer.send(
-            JSON.stringify({
-                action: 'move',
-                data: { pitch: 0, roll: 0 },
-            }),
-        );
+        toast.warning(`Gamepad disconnected`);
+
+        if (store.state.gamepad.isEnabled) {
+            store.state.camera.pan = 0;
+            store.state.camera.tilt = 0;
+
+            peer.send(
+                JSON.stringify({
+                    action: 'camera',
+                    data: { type: 'degrees', tilt: 0, pan: 0 },
+                }),
+            );
+
+            store.commit('setPiloting', { pitch: 0, roll: 0, throttle: 0 });
+
+            store.state.piloting.pitch = 0;
+            store.state.piloting.roll = 0;
+            store.state.piloting.throttle = 0;
+        }
     });
 
     return store;

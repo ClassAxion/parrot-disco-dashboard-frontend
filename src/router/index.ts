@@ -9,6 +9,7 @@ import Home from '../views/Home.vue';
 import Health from '../views/Health.vue';
 import Statistics from '../views/Statistics.vue';
 import SettingsAutonomous from '../views/SettingsAutonomous.vue';
+import SettingsGamepad from '../views/SettingsGamepad.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -55,6 +56,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/settings/autonomous',
         name: 'SettingsAutonomous',
         component: SettingsAutonomous,
+    },
+    {
+        path: '/settings/gamepad',
+        name: 'SettingsGamepad',
+        component: SettingsGamepad,
     },
     {
         path: '/statistics',

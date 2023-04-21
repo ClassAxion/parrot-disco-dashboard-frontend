@@ -13,7 +13,7 @@
 <script lang="ts">
 import { Store } from '@/interfaces/Store';
 import { defineComponent } from 'vue';
-import { mapState, mapActions, mapMutations } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
@@ -31,6 +31,9 @@ export default defineComponent({
     },
     computed: {
         ...mapState({
+            isGamepadActive: state =>
+                (state as Store).gamepad.isConnected &&
+                (state as Store).gamepad.isEnabled,
             isThrottleEnabled: state =>
                 (state as Store).state.flyingState !== 0 &&
                 (state as Store).permission.canPilotingThrottle,
@@ -42,6 +45,8 @@ export default defineComponent({
             updatePiloting: 'updatePiloting',
         }),
         updatePosition() {
+            if (this.isGamepadActive) return;
+
             if (!this.isThrottleEnabled) {
                 this.throttle = 0;
                 return;
@@ -50,6 +55,8 @@ export default defineComponent({
             let throttle = this.throttle;
 
             if (throttle > -10 && throttle < 10) throttle = 0;
+
+            console.log(throttle);
 
             this.updatePiloting({ throttle: Number(throttle) });
         },

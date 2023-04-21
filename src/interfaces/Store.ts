@@ -14,11 +14,11 @@ import { Stats } from './store/Stats';
 import { User } from './store/User';
 import { Geofence } from './store/Geofence';
 import { Autonomous } from './store/Autonomous';
+import { Gamepad } from './store/Gamepad';
 
 export interface Store {
     flights: { [key: string]: GlobalMapFlight };
     isConnected: boolean;
-    isGamePadActive: boolean;
     animationFrame: number;
     stream: any;
     battery: Battery;
@@ -36,4 +36,5 @@ export interface Store {
     stats: Stats;
     geofence: Geofence;
     autonomous: Autonomous;
+    gamepad: Gamepad;
 }
