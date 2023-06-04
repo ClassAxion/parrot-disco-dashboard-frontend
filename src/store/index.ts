@@ -744,8 +744,6 @@ export default function(socket: Socket, peer: Peer): Store<StoreInfo> {
                 store.state.piloting.roll = roll;
                 store.state.piloting.throttle = throttle;
 
-                console.log(throttle);
-
                 store.commit('setPiloting', { pitch, roll, throttle });
             }
         }

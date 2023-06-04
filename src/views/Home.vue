@@ -104,10 +104,8 @@ const Parrot = require('@/assets/img/parrot-truncate.png');
 export default defineComponent({
     inject: ['socket'],
     setup() {
-        // Get toast interface
         const toast = useToast();
 
-        // Make it available inside methods
         return { toast };
     },
     mounted() {
@@ -116,18 +114,32 @@ export default defineComponent({
 
             switch (this.selectedView) {
                 case 'Dashboard':
+                case 'dashboard':
                     this.$router.push('/dashboard');
                     break;
                 case 'Only Video':
+                case 'only video':
+                case 'only-video':
                     this.$router.push('/only-video');
                     break;
                 case 'Mobile':
+                case 'mobile':
                     this.$router.push('/mobile');
                     break;
                 default:
                     this.toast.warning('This view is unsupported right now :(');
             }
         });
+
+        if (!!this.$route.query.auto) {
+            const view = this.$route.query.auto as string;
+
+            if (['dashboard', 'only-video', 'mobile'].includes(view)) {
+                this.selectedView = view;
+
+                this.connect();
+            }
+        }
     },
     data() {
         return {
